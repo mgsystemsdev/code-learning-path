@@ -1,6 +1,9 @@
 # code-learning-path
 
 **Purpose:** A multi-trajectory learning repository tracking courses, projects, and templates across Python, Web, and DevOps.
+> **Note:** Currently, the only active trajectory under development is the **Python trajectory**. All other trajectories are planned for future work.
+
+---
 
 ## Overview
 - A **trajectory** is a focused learning lane (e.g., *python-trajectory*, *react-trajectory*). Each trajectory keeps its own courses, personal projects, and templates.
