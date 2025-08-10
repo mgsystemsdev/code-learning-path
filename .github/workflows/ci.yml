@@ -39,21 +39,13 @@ jobs:
         id: find_projects
         shell: bash
         run: |
-          python - << 'PY'
-import pathlib, json
-paths = sorted({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')})
-print(json.dumps(paths))
-PY
+          python - << 'PY'import pathlib, jsonpaths = sorted({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')})print(json.dumps(paths))PY
 
       - name: Lint/Test each project
         shell: bash
         run: |
           set -e
-          projects=$(python - << 'PY'
-import pathlib
-print("\n".join(sorted({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')})))
-PY
-)
+          projects=$(python - << 'PY'import pathlibprint("\n".join(sorted({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')})))PY)
           if [ -z "$projects" ]; then
             echo "No Python projects found"
             exit 0
