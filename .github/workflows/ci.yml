@@ -22,19 +22,12 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: (Best-effort) Install uv
-        shell: bash
-        run: |
-          if ! command -v uv >/dev/null 2>&1; then
-            python -m pip install --upgrade pip
-            pip install uv || true
-          fi
-
-      - name: Ensure base tooling (fallback)
+      - name: Install tooling (uv + ruff/black/pytest)
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          pip install --disable-pip-version-check --quiet ruff black pytest || true
+          pip install uv || true
+          pip install --disable-pip-version-check --quiet ruff black pytest
 
       - name: Find Python projects with pyproject.toml
         id: find_projects
@@ -46,7 +39,7 @@ paths = sorted({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')
 print(json.dumps(paths))
 PY
 
-      - name: Lint/Test each project
+      - name: Lint/Test each project (fail on issues)
         shell: bash
         run: |
           set -e
@@ -64,12 +57,12 @@ PY
             echo "=== $prj ==="
 
             if command -v uv >/dev/null 2>&1; then
-              (cd "$prj" && uv pip install -e ".[dev]" || uv pip install -r requirements.txt || true)
+              (cd "$prj" && uv pip install -e ".[dev]" || uv pip install -r requirements.txt)
             else
-              (cd "$prj" && pip install -e ".[dev]" || pip install -r requirements.txt || true)
+              (cd "$prj" && pip install -e ".[dev]" || pip install -r requirements.txt)
             fi
 
-            (cd "$prj" && python -c "import ruff"   >/dev/null 2>&1 && ruff check .   || true)
-            (cd "$prj" && python -c "import black"  >/dev/null 2>&1 && black --check . || true)
-            (cd "$prj" && python -c "import pytest" >/dev/null 2>&1 && pytest -q      || true)
+            (cd "$prj" && ruff check .)
+            (cd "$prj" && black --check .)
+            (cd "$prj" && pytest -q)
           done
