@@ -1,95 +1,61 @@
 name: CI
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 jobs:
   python-template-checks:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ "3.11" ]
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: ${{ matrix.python-version }} }
-      - name: Find Python projects with pyproject.toml
-        run: |
-          python - << 'PY'
-import pathlib, json
-paths = [str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')]
-print(json.dumps(paths))
-PY
-      - name: Install uv
-        run: pip install uv || true
-      - name: Lint/Test each project
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: (Best-effort) Install uv
         shell: bash
         run: |
+          if ! command -v uv >/dev/null 2>&1; then
+            python -m pip install --upgrade pip
+            pip install uv || true
+          fi
+
+      - name: Ensure base tooling (fallback)
+        run: |
+          python -m pip install --upgrade pip
+          pip install --disable-pip-version-check --quiet ruff black pytest || true
+
+      - name: Find Python projects with pyproject.toml
+        id: find_projects
+        shell: bash
+        run: |
+          python - << 'PY'import pathlib, jsonpaths = sorted({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')})print(json.dumps(paths))PY- name: Lint/Test each projectshell: bashrun: |
           set -e
-          projects=$(python - << 'PY'
-import pathlib
-print("
-".join({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')}))
-PY
-)
-          if [ -z "$projects" ]; then echo "No Python projects found"; exit 0; fi
+          projects=$(python - << 'PY'import pathlibprint("\n".join(sorted({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')})))PY)
+          if [ -z "$projects" ]; then
+            echo "No Python projects found"
+            exit 0
+          fi
+
           for prj in $projects; do
             echo "=== $prj ==="
-            if command -v uv >/dev/null; then
+
+            if command -v uv >/dev/null 2>&1; then
               (cd "$prj" && uv pip install -e ".[dev]" || uv pip install -r requirements.txt || true)
             else
               (cd "$prj" && pip install -e ".[dev]" || pip install -r requirements.txt || true)
             fi
-            (cd "$prj" && python -m ruff --version >/dev/null 2>&1 && ruff check . || true)
-            (cd "$prj" && python -m black --check . || true)
-            (cd "$prj" && pytest -q || true)
-          done
-cat > .github/workflows/ci.yml << 'EOF'
-name: CI
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-jobs:
-  python-template-checks:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ "3.11" ]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: ${{ matrix.python-version }} }
-      - name: Find Python projects with pyproject.toml
-        run: |
-          python - << 'PY'
-import pathlib, json
-paths = [str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')]
-print(json.dumps(paths))
-PY
-      - name: Install uv
-        run: pip install uv || true
-      - name: Lint/Test each project
-        shell: bash
-        run: |
-          set -e
-          projects=$(python - << 'PY'
-import pathlib
-print("\n".join({str(p.parent) for p in pathlib.Path('.').rglob('pyproject.toml')}))
-PY
-)
-          if [ -z "$projects" ]; then echo "No Python projects found"; exit 0; fi
-          for prj in $projects; do
-            echo "=== $prj ==="
-            if command -v uv >/dev/null; then
-              (cd "$prj" && uv pip install -e ".[dev]" || uv pip install -r requirements.txt || true)
-            else
-              (cd "$prj" && pip install -e ".[dev]" || pip install -r requirements.txt || true)
-            fi
-            (cd "$prj" && python -m ruff --version >/dev/null 2>&1 && ruff check . || true)
-            (cd "$prj" && python -m black --check . || true)
-            (cd "$prj" && pytest -q || true)
-          done
-EOF
+
+            (cd "$prj" && python -c "import ruff"   >/dev/null 2>&1 && ruff check .   || true)
+            (cd "$prj" && python -c "import black"  >/dev/null 2>&1 && black --check . || true)
+            (cd "$prj" && python -c "import pytest" >/dev/null 2>&1 && pytest -q      || true)done
