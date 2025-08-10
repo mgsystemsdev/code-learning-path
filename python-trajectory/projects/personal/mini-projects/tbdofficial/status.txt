@@ -1,0 +1,46 @@
+✅ Structure locked
+🛠️ In progress: Demos, README
+🚫 Not started: Backend, Export utils
+# 🧠 Training Python Board
+
+Welcome to your GUI-first Python training system — designed to teach real-world structure, modular thinking, and safe experimentation.
+
+## 🚀 Quickstart
+
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/your-org/training-python-board
+   cd training-python-board
+
+
+# Getting Started
+
+## 🛠 Requirements
+
+- Python 3.11+
+- Pip (Python package manager)
+
+## 🚀 Steps
+
+1. Clone this project:
+   ```bash
+   git clone https://github.com/your-org/training-python-board
+   cd training-python-board
+
+
+---
+
+### ✅ `git_basics.md`
+
+```markdown
+# Git Basics
+
+## 🔧 Setup
+
+```bash
+git init
+git add .
+git commit -m "initial commit"
+git branch -M main
+git remote add origin https://github.com/your-org/training-python-board
+git push -u origin main

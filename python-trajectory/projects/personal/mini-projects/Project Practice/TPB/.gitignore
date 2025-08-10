@@ -1,0 +1,26 @@
+# Bytecode & Python junk
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# System files
+.DS_Store
+
+# Logs & exports
+logs/
+exports/
+*.log
+*.xlsx
+*.csv
+
+# IDE settings
+.vscode/
+.idea/
+
+# Test or debug artifacts
+broken_versions/
