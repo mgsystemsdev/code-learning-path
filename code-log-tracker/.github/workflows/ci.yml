@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # PySide6 not needed for headless CI workflow; leave as is or ignore import in tests
+
+      - name: Run tests
+        run: |
+          pytest -q
+
+      - name: Build demo CSV
+        run: |
+          python scripts/export_demo_data.py
+        env:
+          # if your db connects via file, ensure it's present; else this step will still succeed with 0 rows
+          PYTHONPATH: .
+
+      - name: Upload demo artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web_demo_csv
+          path: web_demo/demo_data.csv
