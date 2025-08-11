@@ -1,5 +1,7 @@
 # Learning Tracker (Desktop + Web Demo)
 
+https://code-learning-path-he6mnt3usprtot3tltlab4.streamlit.app/
+
 **What this is:** A production-style learning log with computed **Points** and **Project Progress %**.  
 **Desktop app:** PySide6 (offline, fast data entry).  
 **Web demo:** Streamlit viewer so recruiters can browse your progress **without installing the desktop UI**.
