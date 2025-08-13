@@ -192,6 +192,28 @@ def insert_or_update_session(row):
         cur.execute(f"INSERT INTO sessions({','.join(cols)}) VALUES({placeholders})", vals)
         sid = cur.lastrowid
     con.commit()
+
+    # Recompute and store project progress if a project name is provided
+    project_name = row.get("project_name")
+    if project_name:
+        cur.execute("SELECT target_hours FROM projects WHERE name=?", (project_name,))
+        tgt_row = cur.fetchone()
+        target = float(tgt_row[0]) if tgt_row else 0.0
+
+        cur.execute(
+            "SELECT IFNULL(SUM(hours_spent),0) FROM sessions WHERE project_name=?",
+            (project_name,),
+        )
+        logged_row = cur.fetchone()
+        logged = float(logged_row[0] or 0.0)
+
+        progress = min(100.0, (logged / target) * 100.0) if target > 0 else 0.0
+        cur.execute(
+            "UPDATE sessions SET project_progress_pct=? WHERE id=?",
+            (progress, sid),
+        )
+        con.commit()
+
     con.close()
     return sid
 
