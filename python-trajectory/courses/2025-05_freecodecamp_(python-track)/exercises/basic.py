@@ -76,3 +76,35 @@ print(text[-1])
 
 text = 'Hello World'
 print(len(text))
+
+
+# Step 8Passed
+# You can see 11 printed on the terminal because 'Hello World' contains 11 characters.
+
+# Another useful built-in function is type(), which returns the data type of a variable. Modify your print() call to print the data type of text.
+
+
+text = 'Hello World'
+print(type(text))
+
+
+# Step 9Passed
+# As you can see, the output of printing type(text) is <class 'str'>, which means that your variable is a string, indicated as str.
+
+# Now go to a new line and create another variable called shift and assign the value 3 to this variable.
+
+text = 'Hello World'
+print(type(text))
+shift = 3
+
+
+# Step 10Passed
+# And now print your new variable.
+
+text = 'Hello World'
+print(type(text))
+shift = 3
+print(shift)
+
+# Step 11Passed
+# Modify your print(shift) call to print the data type of your shift variable.
