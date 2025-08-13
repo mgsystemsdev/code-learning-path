@@ -577,22 +577,19 @@ class MainWindow(QMainWindow):
             points = hours * diff_weights.get(difficulty, 1.0) * life_mults.get(lifecycle, 1.0)
 
             # Calculate progress PREVIEW for Projects only
-            progress = 0.0
+            progress_preview = 0.0
+            logged = 0.0
             if is_project and project_name:
                 try:
                     target = project_target_hours(project_name) or 0.0
                     logged = project_logged_hours(project_name) or 0.0
                     if target > 0:
-                        # Include current form's hours in preview calculation
-                        progress_preview = (logged + hours) / target * 100.0
-                        progress = min(100.0, progress_preview)  # Cap at 100%
+                        progress_preview = min(100.0, ((logged + hours) / target) * 100.0)
                     else:
-                        # Warn if target is missing or 0
-                        QMessageBox.warning(self, "Warning", f"No target hours set for project '{project_name}'. Progress will show 0%.")
-                        progress = 0.0
+                        progress_preview = 0.0
                 except Exception as e:
                     print(f"Warning: Progress calculation failed: {e}")
-                    progress = 0.0
+                    progress_preview = 0.0
 
             # Create row data
             row_data = {
@@ -609,7 +606,7 @@ class MainWindow(QMainWindow):
                 "difficulty": difficulty,
                 "domain": self.input_widgets["Topic Area"].currentText().strip(),
                 "points_awarded": points,
-                "project_progress_pct": float(f"{progress:.1f}") if is_project else 0.0,  # One decimal place
+                "project_progress_pct": float(f"{progress_preview:.1f}") if is_project else 0.0,  # One decimal place
             }
 
             # Save to database
@@ -619,9 +616,12 @@ class MainWindow(QMainWindow):
             
             # Show success message with progress info for projects
             if is_project and project_name:
-                QMessageBox.information(self, "Success", 
+                QMessageBox.information(
+                    self,
+                    "Success",
                     f"Project row saved successfully!\n"
-                    f"Progress: {progress:.1f}% ({logged + hours:.1f}h logged)")
+                    f"Progress: {progress_preview:.1f}% ({logged + hours:.1f}h logged)",
+                )
             else:
                 QMessageBox.information(self, "Success", "Row saved successfully!")
             
@@ -716,22 +716,20 @@ class MainWindow(QMainWindow):
     def on_cell_changed(self, item):
         if self.reloading:
             return
-            
+
         try:
             row_idx = item.row()
             id_item = self.table.item(row_idx, 0)
             if not id_item or not id_item.text().strip():
                 return
-                
+
             session_id = int(id_item.text())
 
-            # Collect all row values
             row_values = {}
             for col_idx, key in enumerate(KEYS):
                 cell_item = self.table.item(row_idx, col_idx)
                 row_values[key] = "" if cell_item is None else cell_item.text()
 
-            # Recompute calculated fields
             try:
                 hours = float(row_values["hours_spent"] or 0.0)
             except (ValueError, TypeError):
@@ -747,52 +745,33 @@ class MainWindow(QMainWindow):
             points = hours * diff_weights.get(difficulty, 1.0) * life_mults.get(lifecycle, 1.0)
             row_values["points_awarded"] = f"{points:.2f}"
 
-            # Calculate project progress - RECOMPUTE after DB update
+            row_values["id"] = session_id
+            row_values["hours_spent"] = hours
+            insert_or_update_session(row_values)
+
             progress_pct = ""
             if row_values["type"] == "Project" and row_values["project_name"]:
                 try:
-                    # Update database FIRST so logged hours includes this change
-                    row_values["id"] = session_id
-                    row_values["hours_spent"] = hours
-                    insert_or_update_session(row_values)
-                    
-                    # Now recompute progress with updated data
                     target = project_target_hours(row_values["project_name"]) or 0.0
                     logged = project_logged_hours(row_values["project_name"]) or 0.0
-                    if target > 0:
-                        progress_val = min(100.0, (logged / target) * 100.0)  # Cap at 100%
-                        progress_pct = f"{progress_val:.1f}"  # One decimal place
-                    else:
-                        progress_pct = "0.0"
+                    progress_pct = f"{min(100.0, (logged / target) * 100.0):.1f}" if target > 0 else "0.0"
                 except Exception as e:
                     print(f"Warning: Progress recalculation failed: {e}")
                     progress_pct = "0.0"
-            else:
-                # Exercise rows or missing project name
-                progress_pct = ""
-                # Still update database for non-project rows
-                row_values["id"] = session_id
-                row_values["hours_spent"] = hours
-                insert_or_update_session(row_values)
-
             row_values["project_progress_pct"] = progress_pct
 
-            # Update UI with recomputed values
             self.reloading = True
             try:
                 points_col = KEYS.index("points_awarded")
                 progress_col = KEYS.index("project_progress_pct")
                 self.table.item(row_idx, points_col).setText(row_values["points_awarded"])
                 self.table.item(row_idx, progress_col).setText(row_values["project_progress_pct"])
-                
-                # Make progress column read-only
+
                 progress_item = self.table.item(row_idx, progress_col)
                 if progress_item:
                     progress_item.setFlags(progress_item.flags() & ~Qt.ItemIsEditable)
-                    
             finally:
                 self.reloading = False
-
         except Exception as e:
             print(f"Error updating cell: {e}")
 
