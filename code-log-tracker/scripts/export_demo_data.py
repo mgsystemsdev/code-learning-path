@@ -8,12 +8,14 @@ OUT = os.path.join(os.path.dirname(__file__), "..", "web_demo", "demo_data.csv")
 def export(limit=1000):
     con = connect()
     cur = con.cursor()
+    # Join sessions with items to pull the canonical name and type
     cur.execute("""
-        SELECT id, date, type, exercise_name, project_name, activity_name,
-               description, lifecycle, hours_spent, tags, difficulty, domain,
-               points_awarded, project_progress_pct
-        FROM sessions
-        ORDER BY date DESC, id DESC
+        SELECT s.id, s.date, i.type, i.canonical_name,
+               s.status, s.hours_spent, s.notes, s.tags,
+               s.difficulty, s.topic, s.points_awarded, s.progress_pct
+        FROM sessions s
+        JOIN items i ON s.item_id = i.id
+        ORDER BY s.date DESC, s.id DESC
         LIMIT ?
     """, (limit,))
     rows = cur.fetchall()
@@ -22,13 +24,17 @@ def export(limit=1000):
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with open(OUT, "w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
+        # Updated header row
         w.writerow([
-            "ID","Date","Type","Exercise Name","Project Name","Activity Name",
-            "Notes","Status","Hours","Tags","Difficulty","Topic",
-            "Points","Progress %"
+            "ID", "Date", "Type", "Work Item",
+            "Status", "Hours", "Notes", "Tags",
+            "Difficulty", "Topic", "Points", "Progress %"
         ])
         for r in rows:
-            w.writerow(r)
+            # Format progress_pct as a string with a percent sign
+            row = list(r)
+            row[-1] = f"{row[-1]:.1f}%" if row[-1] else ""
+            w.writerow(row)
     print(f"Wrote {OUT} ({len(rows)} rows)")
 
 if __name__ == "__main__":
