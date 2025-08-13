@@ -1,0 +1,98 @@
+{
+  "topics": {
+    "JavaScript Basics": {
+      "default_difficulty": "Beginner",
+      "default_target_hours": 5
+    },
+    "DOM Manipulation": {
+      "default_difficulty": "Intermediate",
+      "default_target_hours": 8
+    },
+    "Async JavaScript": {
+      "default_difficulty": "Intermediate",
+      "default_target_hours": 10
+    },
+    "React Development": {
+      "default_difficulty": "Advanced",
+      "default_target_hours": 20
+    },
+    "Node.js Backend": {
+      "default_difficulty": "Advanced",
+      "default_target_hours": 15
+    },
+    "Testing & Quality": {
+      "default_difficulty": "Intermediate",
+      "default_target_hours": 8
+    }
+  },
+  "skills": {
+    "Variables and Functions": {
+      "keywords": ["var", "let", "const", "function", "arrow", "scope"],
+      "difficulty": "Beginner",
+      "default_target_hours": 4
+    },
+    "Arrays and Objects": {
+      "keywords": ["array", "object", "map", "filter", "reduce", "destructuring"],
+      "difficulty": "Beginner",
+      "default_target_hours": 6
+    },
+    "DOM Events": {
+      "keywords": ["dom", "event", "click", "listener", "element", "query"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 7
+    },
+    "Fetch API": {
+      "keywords": ["fetch", "api", "http", "promise", "async", "await"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 8
+    },
+    "React Components": {
+      "keywords": ["react", "component", "jsx", "props", "state", "hooks"],
+      "difficulty": "Advanced",
+      "default_target_hours": 15
+    },
+    "React Hooks": {
+      "keywords": ["usestate", "useeffect", "usehook", "custom hook"],
+      "difficulty": "Advanced",
+      "default_target_hours": 10
+    },
+    "Express.js Server": {
+      "keywords": ["express", "server", "middleware", "routes", "node"],
+      "difficulty": "Advanced",
+      "default_target_hours": 12
+    },
+    "MongoDB Integration": {
+      "keywords": ["mongodb", "mongoose", "database", "nosql", "crud"],
+      "difficulty": "Advanced",
+      "default_target_hours": 10
+    },
+    "Jest Testing": {
+      "keywords": ["jest", "test", "unit", "mock", "coverage", "testing"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 6
+    },
+    "ES6+ Features": {
+      "keywords": ["es6", "class", "module", "import", "export", "spread"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 8
+    }
+  },
+  "aliases": {
+    "js": "JavaScript Basics",
+    "functions": "Variables and Functions",
+    "vars": "Variables and Functions",
+    "arrays": "Arrays and Objects",
+    "objects": "Arrays and Objects",
+    "events": "DOM Events",
+    "api": "Fetch API",
+    "promises": "Fetch API",
+    "components": "React Components",
+    "hooks": "React Hooks",
+    "server": "Express.js Server",
+    "database": "MongoDB Integration",
+    "db": "MongoDB Integration",
+    "tests": "Jest Testing",
+    "modern js": "ES6+ Features",
+    "classes": "ES6+ Features"
+  }
+}

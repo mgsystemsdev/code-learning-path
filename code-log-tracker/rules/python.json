@@ -1,0 +1,189 @@
+{
+  "topics": {
+    "Python Basics": {
+      "default_difficulty": "Beginner",
+      "default_target_hours": 5
+    },
+    "Data Structures": {
+      "default_difficulty": "Intermediate", 
+      "default_target_hours": 8
+    },
+    "Web Development": {
+      "default_difficulty": "Intermediate",
+      "default_target_hours": 12
+    },
+    "APIs & HTTP": {
+      "default_difficulty": "Intermediate",
+      "default_target_hours": 10
+    },
+    "Data Science": {
+      "default_difficulty": "Advanced",
+      "default_target_hours": 15
+    },
+    "Machine Learning": {
+      "default_difficulty": "Advanced", 
+      "default_target_hours": 20
+    },
+    "DevOps & Deployment": {
+      "default_difficulty": "Advanced",
+      "default_target_hours": 12
+    },
+    "Security": {
+      "default_difficulty": "Expert",
+      "default_target_hours": 15
+    }
+  },
+  "skills": {
+    "Variables and Data Types": {
+      "keywords": ["variables", "int", "str", "float", "bool", "data types"],
+      "difficulty": "Beginner",
+      "default_target_hours": 3
+    },
+    "Control Flow": {
+      "keywords": ["if", "else", "elif", "for", "while", "loops", "conditions"],
+      "difficulty": "Beginner", 
+      "default_target_hours": 4
+    },
+    "Functions": {
+      "keywords": ["def", "function", "parameters", "arguments", "return"],
+      "difficulty": "Beginner",
+      "default_target_hours": 5
+    },
+    "Lists and Dictionaries": {
+      "keywords": ["list", "dict", "dictionary", "append", "key", "value", "index"],
+      "difficulty": "Beginner",
+      "default_target_hours": 6
+    },
+    "Object-Oriented Programming": {
+      "keywords": ["class", "object", "oop", "inheritance", "method", "attribute"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 10
+    },
+    "File Handling": {
+      "keywords": ["file", "open", "read", "write", "csv", "json", "io"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 6
+    },
+    "Error Handling": {
+      "keywords": ["try", "except", "finally", "exception", "error", "debugging"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 5
+    },
+    "Pandas Data Analysis": {
+      "keywords": ["pandas", "dataframe", "series", "csv", "excel", "groupby"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 12
+    },
+    "NumPy Arrays": {
+      "keywords": ["numpy", "array", "matrix", "mathematical", "scientific"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 8
+    },
+    "Web Scraping": {
+      "keywords": ["requests", "beautifulsoup", "scraping", "html", "web"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 10
+    },
+    "Flask Web Development": {
+      "keywords": ["flask", "web", "server", "routes", "templates", "api"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 15
+    },
+    "Django Framework": {
+      "keywords": ["django", "mvc", "models", "views", "templates", "orm"],
+      "difficulty": "Advanced",
+      "default_target_hours": 25
+    },
+    "REST API Development": {
+      "keywords": ["api", "rest", "http", "json", "endpoints", "postman"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 12
+    },
+    "Database Integration": {
+      "keywords": ["sql", "sqlite", "postgresql", "mysql", "database", "orm"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 10
+    },
+    "Authentication & Security": {
+      "keywords": ["auth", "jwt", "oauth", "security", "login", "password"],
+      "difficulty": "Advanced",
+      "default_target_hours": 12
+    },
+    "Testing with Pytest": {
+      "keywords": ["pytest", "testing", "unit test", "mock", "coverage"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 8
+    },
+    "Data Visualization": {
+      "keywords": ["matplotlib", "seaborn", "plotly", "charts", "graphs"],
+      "difficulty": "Intermediate",
+      "default_target_hours": 10
+    },
+    "Machine Learning with Scikit-learn": {
+      "keywords": ["sklearn", "machine learning", "ml", "model", "prediction"],
+      "difficulty": "Advanced",
+      "default_target_hours": 20
+    },
+    "Deep Learning with TensorFlow": {
+      "keywords": ["tensorflow", "neural", "deep learning", "ai", "keras"],
+      "difficulty": "Expert",
+      "default_target_hours": 30
+    },
+    "Docker Containerization": {
+      "keywords": ["docker", "container", "dockerfile", "image", "deployment"],
+      "difficulty": "Advanced",
+      "default_target_hours": 10
+    },
+    "AWS Cloud Services": {
+      "keywords": ["aws", "cloud", "s3", "ec2", "lambda", "deployment"],
+      "difficulty": "Advanced",
+      "default_target_hours": 15
+    },
+    "Async Programming": {
+      "keywords": ["async", "await", "asyncio", "concurrent", "threading"],
+      "difficulty": "Advanced",
+      "default_target_hours": 12
+    }
+  },
+  "aliases": {
+    "vars": "Variables and Data Types",
+    "data types": "Variables and Data Types",
+    "if statements": "Control Flow",
+    "loops": "Control Flow",
+    "functions": "Functions",
+    "defs": "Functions",
+    "lists": "Lists and Dictionaries",
+    "dicts": "Lists and Dictionaries",
+    "classes": "Object-Oriented Programming",
+    "oop": "Object-Oriented Programming",
+    "files": "File Handling",
+    "exceptions": "Error Handling",
+    "try catch": "Error Handling",
+    "pd": "Pandas Data Analysis",
+    "dataframes": "Pandas Data Analysis",
+    "np": "NumPy Arrays",
+    "arrays": "NumPy Arrays",
+    "scraping": "Web Scraping",
+    "beautiful soup": "Web Scraping",
+    "flask": "Flask Web Development",
+    "django": "Django Framework",
+    "api": "REST API Development",
+    "rest": "REST API Development",
+    "sql": "Database Integration",
+    "db": "Database Integration",
+    "auth": "Authentication & Security",
+    "jwt": "Authentication & Security",
+    "tests": "Testing with Pytest",
+    "unittest": "Testing with Pytest",
+    "plots": "Data Visualization",
+    "charts": "Data Visualization",
+    "ml": "Machine Learning with Scikit-learn",
+    "sklearn": "Machine Learning with Scikit-learn",
+    "tf": "Deep Learning with TensorFlow",
+    "tensorflow": "Deep Learning with TensorFlow",
+    "containers": "Docker Containerization",
+    "cloud": "AWS Cloud Services",
+    "async": "Async Programming",
+    "concurrency": "Async Programming"
+  }
+}

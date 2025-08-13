@@ -1,0 +1,44 @@
+{
+  "difficulty_weights": {
+    "Beginner": 1.0,
+    "Intermediate": 1.5,
+    "Advanced": 2.0,
+    "Expert": 2.5
+  },
+  "status_multipliers": {
+    "Planned": 1.0,
+    "In Progress": 1.1,
+    "Completed": 1.2,
+    "Blocked": 0.8
+  },
+  "ui_limits": {
+    "max_hours_per_session": 24,
+    "hours_increment": 0.25,
+    "max_target_hours": 1000
+  },
+  "validation_rules": {
+    "min_work_item_length": 2,
+    "max_work_item_length": 100,
+    "max_notes_length": 500,
+    "max_tags_length": 200
+  },
+  "streak_settings": {
+    "min_hours_for_streak": 0.25,
+    "max_gap_days": 1,
+    "recent_activity_days": 14
+  },
+  "projection_settings": {
+    "min_sessions_for_projection": 3,
+    "projection_window_days": 14,
+    "confidence_threshold": 0.7
+  },
+  "default_topics": {
+    "Exercise": "Basics",
+    "Project": "Application"
+  },
+  "gamification": {
+    "point_milestones": [100, 250, 500, 1000, 2000, 5000],
+    "streak_milestones": [7, 30, 60, 100, 365],
+    "completion_bonus_multiplier": 1.2
+  }
+}
