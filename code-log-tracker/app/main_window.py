@@ -474,93 +474,93 @@ class MainWindow(QMainWindow):
 
     def add_entry(self):
         self.clear_form()
-def save_entry(self):
-    """
-    Insert a new session row using the form values.
-    Handles suggestion dialog for similar items and computes points.
-    """
-    import traceback
+    def save_entry(self):
+        """
+        Insert a new session row using the form values.
+        Handles suggestion dialog for similar items and computes points.
+        """
+        import traceback
 
-    def fail(stage: str, err: Exception):
-        tb = traceback.format_exc()
-        # Also print to console for dev visibility
-        print(f"[save_entry:{stage}] {err}\n{tb}")
-        QMessageBox.critical(self, "Error", f"[{stage}] {err}")
+        def fail(stage: str, err: Exception):
+            tb = traceback.format_exc()
+            # Also print to console for dev visibility
+            print(f"[save_entry:{stage}] {err}\n{tb}")
+            QMessageBox.critical(self, "Error", f"[{stage}] {err}")
 
-    # 1) Read & validate form inputs
-    try:
-        language_code = self.inputs["language"].currentData()
-        item_type = self.inputs["type"].currentText().strip()
-        work_item = self.inputs["work_item"].currentText().strip()
-        date_str = self.inputs["date"].date().toString("yyyy-MM-dd")
-        hours = float(self.inputs["hours"].value())
-        notes = self.inputs["notes"].text().strip()
-        tags = self.inputs["tags"].text().strip()
-        difficulty = self.inputs["difficulty"].currentText() or "Beginner"
-        topic = self.inputs["topic"].currentText().strip()
-        status = self.inputs["status"].currentText() or "In Progress"
+        # 1) Read & validate form inputs
+        try:
+            language_code = self.inputs["language"].currentData()
+            item_type = self.inputs["type"].currentText().strip()
+            work_item = self.inputs["work_item"].currentText().strip()
+            date_str = self.inputs["date"].date().toString("yyyy-MM-dd")
+            hours = float(self.inputs["hours"].value())
+            notes = self.inputs["notes"].text().strip()
+            tags = self.inputs["tags"].text().strip()
+            difficulty = self.inputs["difficulty"].currentText() or "Beginner"
+            topic = self.inputs["topic"].currentText().strip()
+            status = self.inputs["status"].currentText() or "In Progress"
 
-        if not language_code:
-            QMessageBox.warning(self, "Validation", "Please select a language.")
-            return
-        if not work_item:
-            QMessageBox.warning(self, "Validation", "Please enter the exercise or project name.")
-            return
-        if item_type not in {"Exercise", "Project"}:
-            QMessageBox.warning(self, "Validation", "Please choose a Type: Exercise or Project.")
-            return
-    except Exception as e:
-        fail("read_form", e); return
+            if not language_code:
+                QMessageBox.warning(self, "Validation", "Please select a language.")
+                return
+            if not work_item:
+                QMessageBox.warning(self, "Validation", "Please enter the exercise or project name.")
+                return
+            if item_type not in {"Exercise", "Project"}:
+                QMessageBox.warning(self, "Validation", "Please choose a Type: Exercise or Project.")
+                return
+        except Exception as e:
+            fail("read_form", e); return
 
-    # 2) Resolve/confirm item_id (similarity dialog path)
-    try:
-        item_id, _is_new, suggestions = find_or_create_item(language_code, item_type, work_item)
-        if suggestions:
-            dlg = SuggestionDialog(suggestions, work_item, self)
-            if dlg.exec():
-                if dlg.create_new:
-                    item_id, _, _ = find_or_create_item(language_code, item_type, work_item)
-                else:
-                    item_id = dlg.selected_item_id or item_id
-    except Exception as e:
-        fail("find_or_create_item", e); return
+        # 2) Resolve/confirm item_id (similarity dialog path)
+        try:
+            item_id, _is_new, suggestions = find_or_create_item(language_code, item_type, work_item)
+            if suggestions:
+                dlg = SuggestionDialog(suggestions, work_item, self)
+                if dlg.exec():
+                    if dlg.create_new:
+                        item_id, _, _ = find_or_create_item(language_code, item_type, work_item)
+                    else:
+                        item_id = dlg.selected_item_id or item_id
+        except Exception as e:
+            fail("find_or_create_item", e); return
 
-    # 3) Compute points from config
-    try:
-        cfg = get_config() or {}
-        diff_w = (cfg.get("difficulty_weights") or {}).get(difficulty, 1.0)
-        status_m = (cfg.get("status_multipliers") or {}).get(status, 1.0)
-        points = hours * float(diff_w) * float(status_m)
-    except Exception as e:
-        fail("compute_points", e); return
+        # 3) Compute points from config
+        try:
+            cfg = get_config() or {}
+            diff_w = (cfg.get("difficulty_weights") or {}).get(difficulty, 1.0)
+            status_m = (cfg.get("status_multipliers") or {}).get(status, 1.0)
+            points = hours * float(diff_w) * float(status_m)
+        except Exception as e:
+            fail("compute_points", e); return
 
-    # 4) Persist
-    try:
-        row_data = {
-            "item_id": item_id,
-            "date": date_str,
-            "status": status,
-            "hours_spent": hours,
-            "notes": notes,
-            "tags": tags,
-            "difficulty": difficulty,
-            "topic": topic,
-            "points_awarded": points,
-        }
-        if getattr(self, "editing_session_id", None):
-            row_data["id"] = self.editing_session_id
+        # 4) Persist
+        try:
+            row_data = {
+                "item_id": item_id,
+                "date": date_str,
+                "status": status,
+                "hours_spent": hours,
+                "notes": notes,
+                "tags": tags,
+                "difficulty": difficulty,
+                "topic": topic,
+                "points_awarded": points,
+            }
+            if getattr(self, "editing_session_id", None):
+                row_data["id"] = self.editing_session_id
 
-        insert_or_update_session(row_data)
-    except Exception as e:
-        fail("insert_or_update_session", e); return
+            insert_or_update_session(row_data)
+        except Exception as e:
+            fail("insert_or_update_session", e); return
 
-    # 5) Refresh UI
-    try:
-        self.reload_table()
-        self.clear_form()
-        QMessageBox.information(self, "Success", "Entry saved successfully!")
-    except Exception as e:
-        fail("reload_table", e); return
+        # 5) Refresh UI
+        try:
+            self.reload_table()
+            self.clear_form()
+            QMessageBox.information(self, "Success", "Entry saved successfully!")
+        except Exception as e:
+            fail("reload_table", e); return
 
     def delete_entry(self):
         """Delete the selected session row (by ID) and refresh."""
@@ -690,74 +690,75 @@ def save_entry(self):
         finally:
             self.reloading = False
 
-    def on_cell_changed(self, item):"""
-    Persist inline edits for the changed row and recompute Points.
-    Safe no-op during bulk reloads.
-    """
-    if self.reloading:
-        return
-    try:
-        row = item.row()
-
-        # helper to get a cell by header name
-        def cell(header: str) -> str:
-            col = HEADERS.index(header)
-            it = self.table.item(row, col)
-            return "" if it is None else it.text().strip()
-
-        # session id (read-only col 0)
-        id_item = self.table.item(row, 0)
-        if not id_item or not id_item.text().strip():
+    def on_cell_changed(self, item):
+        """
+        Persist inline edits for the changed row and recompute Points.
+        Safe no-op during bulk reloads.
+        """
+        if self.reloading:
             return
-        session_id = int(id_item.text())
-
-        # gather values
-        date_str   = cell("Date") or QDate.currentDate().toString("yyyy-MM-dd")
-        status     = cell("Status") or "In Progress"
-        notes      = cell("Notes")
-        tags       = cell("Tags")
-        difficulty = cell("Difficulty") or "Beginner"
-        topic      = cell("Topic")
-
-        # hours as float
         try:
-            hours = float(cell("Hours") or "0")
-        except ValueError:
-            hours = 0.0
+            row = item.row()
+
+            # helper to get a cell by header name
+            def cell(header: str) -> str:
+                col = HEADERS.index(header)
+                it = self.table.item(row, col)
+                return "" if it is None else it.text().strip()
+
+            # session id (read-only col 0)
+            id_item = self.table.item(row, 0)
+            if not id_item or not id_item.text().strip():
+                return
+            session_id = int(id_item.text())
+
+            # gather values
+            date_str   = cell("Date") or QDate.currentDate().toString("yyyy-MM-dd")
+            status     = cell("Status") or "In Progress"
+            notes      = cell("Notes")
+            tags       = cell("Tags")
+            difficulty = cell("Difficulty") or "Beginner"
+            topic      = cell("Topic")
+
+            # hours as float
+            try:
+                hours = float(cell("Hours") or "0")
+            except ValueError:
+                hours = 0.0
+                self.reloading = True
+                try:
+                    self.table.item(row, HEADERS.index("Hours")).setText("0.00")
+                finally:
+                    self.reloading = False
+
+            # compute points
+            cfg = get_config() or {}
+            diff_w   = (cfg.get("difficulty_weights") or {}).get(difficulty, 1.0)
+            status_m = (cfg.get("status_multipliers") or {}).get(status, 1.0)
+            points = float(hours) * float(diff_w) * float(status_m)
+
+            # persist
+            payload = {
+                "id": session_id,
+                "date": date_str,
+                "status": status,
+                "hours_spent": hours,
+                "notes": notes,
+                "tags": tags,
+                "difficulty": difficulty,
+                "topic": topic,
+                "points_awarded": points,
+            }
+            insert_or_update_session(payload)
+
+            # reflect points and optionally refresh if hours/status changed
             self.reloading = True
             try:
-                self.table.item(row, HEADERS.index("Hours")).setText("0.00")
+                self.table.item(row, HEADERS.index("Points")).setText(f"{points:.2f}")
+                if item.column() in (HEADERS.index("Hours"), HEADERS.index("Status")):
+                    self.reload_table()
             finally:
                 self.reloading = False
 
-        # compute points
-        cfg = get_config() or {}
-        diff_w   = (cfg.get("difficulty_weights") or {}).get(difficulty, 1.0)
-        status_m = (cfg.get("status_multipliers") or {}).get(status, 1.0)
-        points = float(hours) * float(diff_w) * float(status_m)
-
-        # persist
-        payload = {
-            "id": session_id,
-            "date": date_str,
-            "status": status,
-            "hours_spent": hours,
-            "notes": notes,
-            "tags": tags,
-            "difficulty": difficulty,
-            "topic": topic,
-            "points_awarded": points,
-        }
-        insert_or_update_session(payload)
-
-        # reflect points and optionally refresh if hours/status changed
-        self.reloading = True
-        try:
-            self.table.item(row, HEADERS.index("Points")).setText(f"{points:.2f}")
-            if item.column() in (HEADERS.index("Hours"), HEADERS.index("Status")):
-                self.reload_table()
-        finally:
-            self.reloading = False
-
-    except Exception as e:
-        print(f"[on_cell_changed] {e}")
+        except Exception as e:
+            print(f"[on_cell_changed] {e}")
