@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 from typing import Dict, Any, List
 from streamlit_option_menu import option_menu
-from st_aggrid import AgGrid, GridOptionsBuilder, DataReturnMode, GridUpdateMode
+# Using standard Streamlit dataframe instead of AgGrid
 
 # Import our components
 from streamlit_auth import (
@@ -315,52 +315,64 @@ def show_sessions_table():
     available_columns = [col for col in display_columns if col in df.columns]
     display_df = df[available_columns].copy()
     
-    # Configure AgGrid
-    gb = GridOptionsBuilder.from_dataframe(display_df)
-    gb.configure_pagination(paginationAutoPageSize=True)
-    gb.configure_side_bar()
-    gb.configure_selection('single', use_checkbox=True)
-    gb.configure_default_column(editable=True, groupable=True)
-    
-    # Make ID column non-editable
-    gb.configure_column('id', editable=False, sort='desc')
-    
-    gridOptions = gb.build()
-    
-    # Display grid
-    grid_response = AgGrid(
+    # Display data with standard Streamlit dataframe (read-only for now)
+    st.dataframe(
         display_df,
-        gridOptions=gridOptions,
-        data_return_mode=DataReturnMode.AS_INPUT,
-        update_mode=GridUpdateMode.MODEL_CHANGED,
-        fit_columns_on_grid_load=False,
-        theme='streamlit',
-        enable_enterprise_modules=True,
+        use_container_width=True,
         height=600,
-        width='100%'
+        column_config={
+            'id': st.column_config.NumberColumn('ID', disabled=True),
+            'date': st.column_config.DateColumn('Date'),
+            'hours_spent': st.column_config.NumberColumn('Hours', format='%.2f'),
+            'points_awarded': st.column_config.NumberColumn('Points', format='%.2f'),
+        }
     )
     
-    # Handle updates
-    if grid_response['data'] is not None:
-        updated_df = pd.DataFrame(grid_response['data'])
-        # Find changed rows by comparing to original
-        changed_rows = []
-        for idx, row in updated_df.iterrows():
-            orig_row = display_df.iloc[idx]
-            # Only compare editable columns
-            editable_cols = [col for col in available_columns if col != 'id']
-            changes = {col: row[col] for col in editable_cols if row[col] != orig_row[col]}
-            if changes:
-                changed_rows.append((row['id'], changes))
-        if changed_rows:
-            st.info(f"{len(changed_rows)} change(s) detected. Updating database...")
-            supabase = get_supabase_manager()
-            for session_id, updates in changed_rows:
-                result = supabase.update_session(session_id, updates)
-                if result.get('success'):
-                    st.success(f"Session {session_id} updated.")
-                else:
-                    st.error(f"Error updating session {session_id}: {result.get('error')}")
+    # Simple row selection for editing
+    if not display_df.empty:
+        st.subheader("📝 Edit Session")
+        selected_id = st.selectbox(
+            "Select session to edit:",
+            options=[None] + display_df['id'].tolist(),
+            format_func=lambda x: f"Session {x}" if x else "Select..."
+        )
+        
+        if selected_id:
+            selected_row = display_df[display_df['id'] == selected_id].iloc[0]
+            
+            with st.form(f"edit_session_{selected_id}"):
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    new_hours = st.number_input("Hours", value=float(selected_row.get('hours_spent', 0)), min_value=0.0, step=0.25)
+                    new_status = st.selectbox("Status", ['Planned', 'In Progress', 'Completed', 'Blocked'], 
+                                            index=['Planned', 'In Progress', 'Completed', 'Blocked'].index(selected_row.get('status', 'In Progress')))
+                
+                with col2:
+                    new_difficulty = st.selectbox("Difficulty", ['Beginner', 'Intermediate', 'Advanced', 'Expert'],
+                                                index=['Beginner', 'Intermediate', 'Advanced', 'Expert'].index(selected_row.get('difficulty', 'Beginner')))
+                    new_topic = st.text_input("Topic", value=selected_row.get('topic', ''))
+                
+                with col3:
+                    new_notes = st.text_area("Notes", value=selected_row.get('notes', ''))
+                
+                if st.form_submit_button("Update Session"):
+                    updates = {
+                        'hours_spent': new_hours,
+                        'status': new_status,
+                        'difficulty': new_difficulty,
+                        'topic': new_topic,
+                        'notes': new_notes
+                    }
+                    
+                    result = supabase_manager.update_session(selected_id, updates)
+                    if result['success']:
+                        st.success("Session updated successfully!")
+                        st.rerun()
+                    else:
+                        st.error(f"Failed to update session: {result['error']}")
+    
+    # Note: Legacy AgGrid update code removed for simplicity
 
 def show_analytics():
     """Show analytics and insights."""

@@ -398,3 +398,6 @@ class SupabaseManager:
 def get_supabase_manager() -> SupabaseManager:
     """Get cached Supabase manager instance."""
     return SupabaseManager()
+
+# Alias for compatibility
+SupabaseClient = SupabaseManager
