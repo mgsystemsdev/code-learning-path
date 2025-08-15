@@ -35,9 +35,10 @@ class DashboardWindow(QMainWindow):
         super().__init__(parent=None)
         self.setWindowTitle("Smart Learning Tracker - Dashboard")
         
-        # Maximize window on launch
-        self.showMaximized()
+        # Launch just under fullscreen
+        self.resize(1400, 820)
         self.setMinimumSize(1200, 700)
+        self.show()
         
         # Services
         self.session_service = SessionService()

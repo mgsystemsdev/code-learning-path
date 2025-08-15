@@ -1,7 +1,7 @@
-# app/widgets/compact_form.py
+# app/widgets/compact_form_fixed.py
 """
-Compact two-row form layout for dashboard interface.
-Notes field becomes a popup modal to save space.
+Ultra-compact form with no internal scrollbars and proper QComboBox implementation.
+Follows exact specifications: clean, compact, scrollbar-free.
 """
 
 from __future__ import annotations
@@ -9,8 +9,8 @@ from typing import Dict, Any, Optional, List, Tuple
 from PySide6.QtWidgets import (
     QWidget, QHBoxLayout, QVBoxLayout, QGridLayout,
     QLabel, QPushButton, QComboBox, QDoubleSpinBox, 
-    QLineEdit, QDateEdit, QDialog, QTextEdit,
-    QDialogButtonBox, QSizePolicy, QFrame
+    QLineEdit, QDateEdit, QSizePolicy, QFrame,
+    QPlainTextEdit, QHeaderView
 )
 from PySide6.QtCore import Qt, QDate, Signal, QTimer
 from PySide6.QtGui import QFont
@@ -18,61 +18,10 @@ from PySide6.QtGui import QFont
 from app.config.ui_config import UIConfig
 
 
-class NotesDialog(QDialog):
-    """Modal dialog for editing notes."""
-    
-    def __init__(self, initial_text: str = "", parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("📋 Session Notes")
-        self.setModal(True)
-        self.resize(500, 300)
-        
-        layout = QVBoxLayout(self)
-        
-        # Instructions
-        instructions = QLabel("Describe what you worked on, challenges faced, key insights...")
-        instructions.setStyleSheet("color: #cbd5e1; font-style: italic; margin-bottom: 8px;")
-        layout.addWidget(instructions)
-        
-        # Text area
-        self.text_edit = QTextEdit()
-        self.text_edit.setPlainText(initial_text)
-        self.text_edit.setStyleSheet("""
-            QTextEdit {
-                border: 2px solid #475569;
-                border-radius: 8px;
-                padding: 12px;
-                background-color: #334155;
-                color: #f1f5f9;
-                font-size: 13px;
-                font-weight: 500;
-                line-height: 1.5;
-            }
-            QTextEdit:focus {
-                border-color: #60a5fa;
-                background-color: #475569;
-            }
-        """)
-        layout.addWidget(self.text_edit)
-        
-        # Buttons
-        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        buttons.accepted.connect(self.accept)
-        buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
-        
-        # Apply dark theme to dialog
-        self.setStyleSheet(UIConfig.MAIN_STYLE)
-        
-    def get_text(self) -> str:
-        """Get the edited text."""
-        return self.text_edit.toPlainText()
-
-
 class CompactForm(QWidget):
     """
-    Compact two-row form layout for maximum space efficiency.
-    All essential fields in just two horizontal rows.
+    Ultra-compact form with no internal scrollbars.
+    Two rows: essentials + details, all properly labeled.
     """
     
     dataChanged = Signal()
@@ -84,111 +33,105 @@ class CompactForm(QWidget):
         self.setup_form()
         
     def setup_form(self):
-        """Create the compact two-row form."""
+        """Create the ultra-compact two-row form with no scrollbars."""
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(8, 8, 8, 8)
-        main_layout.setSpacing(8)
+        main_layout.setSpacing(6)
         
-        # Create form frame with modern styling and more height
-        form_frame = QFrame()
-        form_frame.setFrameStyle(QFrame.StyledPanel | QFrame.Raised)
-        form_frame.setFixedHeight(220)  # Increased height for better spacing
-        form_frame.setStyleSheet("""
+        # Form title
+        title = QLabel("📝 Learning Session Entry")
+        title.setFont(QFont("Arial", 12, QFont.Bold))
+        title.setStyleSheet("color: #60a5fa; margin-bottom: 6px;")
+        main_layout.addWidget(title)
+        
+        # Create form container - FIXED HEIGHT prevents scrolling
+        form_container = QFrame()
+        form_container.setFixedHeight(120)  # Locked height
+        form_container.setStyleSheet("""
             QFrame {
                 background-color: #1e293b;
-                border: 2px solid #475569;
-                border-radius: 12px;
-                padding: 20px;
-                margin: 8px;
+                border: 1px solid #475569;
+                border-radius: 8px;
+                padding: 8px;
             }
         """)
         
-        form_layout = QVBoxLayout(form_frame)
-        form_layout.setContentsMargins(20, 20, 20, 20)  # Increased margins
-        form_layout.setSpacing(16)  # More vertical space between rows
+        form_layout = QVBoxLayout(form_container)
+        form_layout.setContentsMargins(10, 10, 10, 10)
+        form_layout.setSpacing(8)
         
-        # Row 1: Date, Language, Type, Work Item Name, Status
+        # Row 1: Essentials - Date | Language | Type | Work Item Name | Status
         row1 = self._create_row1()
         form_layout.addLayout(row1)
         
-        # Row 2: Hours, Target Time, Difficulty, Topic Area, Tags, Progress, Notes Button
+        # Row 2: Details - Hours | Target Time | Difficulty | Topic Area | Tags | Notes
         row2 = self._create_row2()
         form_layout.addLayout(row2)
         
-        main_layout.addWidget(form_frame)
+        main_layout.addWidget(form_container)
         
-        # Status display
+        # Status display (compact, hidden by default)
         self.status_label = QLabel("")
-        self.status_label.setFixedHeight(30)  # Fixed height
+        self.status_label.setFixedHeight(24)
         self.status_label.setStyleSheet("""
             QLabel {
-                color: #60a5fa;
-                font-weight: 500;
-                padding: 6px 12px;
-                background-color: #334155;
-                border: 1px solid #475569;
-                border-radius: 6px;
-                margin: 2px 0;
+                color: #10b981;
+                background-color: #064e3b;
+                padding: 4px 8px;
+                border-radius: 4px;
+                border: 1px solid #065f46;
+                font-size: 12px;
             }
         """)
-        self.status_label.hide()  # Hide by default
+        self.status_label.hide()
         main_layout.addWidget(self.status_label)
         
     def _create_row1(self) -> QHBoxLayout:
-        """Create first row: Date, Language, Type, Work Item Name, Status."""
+        """Row 1: Date | Language | Type | Work Item Name | Status"""
         row = QHBoxLayout()
-        row.setSpacing(12)
+        row.setSpacing(8)
         
         # Date
-        date_container = self._create_field_container("📅 Date *")
+        date_container = self._create_labeled_field("📅 Date *")
         self.inputs["date"] = QDateEdit()
         self.inputs["date"].setCalendarPopup(True)
         self.inputs["date"].setDate(QDate.currentDate())
-        self.inputs["date"].setFixedWidth(150)  # Wider for better readability
-        self.inputs["date"].setStyleSheet(self._get_input_style())
+        self.inputs["date"].setFixedWidth(110)
+        self._apply_input_style(self.inputs["date"])
         self.inputs["date"].dateChanged.connect(self.dataChanged)
         date_container.addWidget(self.inputs["date"])
         row.addLayout(date_container)
         
         # Language
-        lang_container = self._create_field_container("💻 Language *")
-        self.inputs["language"] = QComboBox()
-        self.inputs["language"].setFixedWidth(160)  # Wider for better readability
-        self.inputs["language"].setStyleSheet(self._get_combo_style())
+        lang_container = self._create_labeled_field("💻 Language *")
+        self.inputs["language"] = self._make_combo([], editable=False)
+        self.inputs["language"].setFixedWidth(120)
         self.inputs["language"].currentTextChanged.connect(self.dataChanged)
-        self.inputs["language"].currentTextChanged.connect(self._on_language_changed)
         lang_container.addWidget(self.inputs["language"])
         row.addLayout(lang_container)
         
         # Type
-        type_container = self._create_field_container("📂 Type *")
-        self.inputs["type"] = QComboBox()
-        self.inputs["type"].addItems(["", "Exercise", "Project"])
-        self.inputs["type"].setFixedWidth(110)
-        self.inputs["type"].setStyleSheet(self._get_combo_style())
+        type_container = self._create_labeled_field("📂 Type *")
+        self.inputs["type"] = self._make_combo(["", "Exercise", "Project"], editable=False)
+        self.inputs["type"].setFixedWidth(100)
         self.inputs["type"].currentTextChanged.connect(self.dataChanged)
         self.inputs["type"].currentTextChanged.connect(self._on_type_changed)
         type_container.addWidget(self.inputs["type"])
         row.addLayout(type_container)
         
-        # Work Item Name (expandable)
-        item_container = self._create_field_container("📝 Work Item Name *")
-        self.inputs["work_item"] = QComboBox()
-        self.inputs["work_item"].setEditable(True)
-        self.inputs["work_item"].setStyleSheet(self._get_combo_style())
-        self.inputs["work_item"].lineEdit().setPlaceholderText("Search or enter new item...")
+        # Work Item Name (expandable, searchable)
+        item_container = self._create_labeled_field("📝 Work Item Name *")
+        self.inputs["work_item"] = self._make_combo([], editable=True)
+        self.inputs["work_item"].lineEdit().setPlaceholderText("Search or enter new...")
         self.inputs["work_item"].lineEdit().textChanged.connect(self.dataChanged)
-        self.inputs["work_item"].lineEdit().textChanged.connect(self._on_work_item_changed)
         item_container.addWidget(self.inputs["work_item"])
         row.addLayout(item_container, 2)  # Give more space
         
         # Status
-        status_container = self._create_field_container("📊 Status")
-        self.inputs["status"] = QComboBox()
-        self.inputs["status"].addItems(["", "Planned", "In Progress", "Completed", "Blocked"])
+        status_container = self._create_labeled_field("📊 Status")
+        self.inputs["status"] = self._make_combo(["", "Planned", "In Progress", "Completed", "Blocked"])
         self.inputs["status"].setCurrentText("In Progress")
-        self.inputs["status"].setFixedWidth(130)
-        self.inputs["status"].setStyleSheet(self._get_combo_style())
+        self.inputs["status"].setFixedWidth(120)
         self.inputs["status"].currentTextChanged.connect(self.dataChanged)
         status_container.addWidget(self.inputs["status"])
         row.addLayout(status_container)
@@ -196,233 +139,179 @@ class CompactForm(QWidget):
         return row
         
     def _create_row2(self) -> QHBoxLayout:
-        """Create second row: Hours, Target Time, Difficulty, Topic, Tags, Progress, Notes."""
+        """Row 2: Hours | Target Time | Difficulty | Topic Area | Tags | Notes"""
         row = QHBoxLayout()
-        row.setSpacing(12)
+        row.setSpacing(8)
         
         # Hours
-        hours_container = self._create_field_container("🕒 Hours *")
-        self.inputs["hours"] = QDoubleSpinBox()
-        self.inputs["hours"].setRange(0, 24)
-        self.inputs["hours"].setSingleStep(0.25)
-        self.inputs["hours"].setDecimals(2)
+        hours_container = self._create_labeled_field("🕒 Hours *")
+        self.inputs["hours"] = self._make_spin(0, 24, 0.25)
         self.inputs["hours"].setSuffix(" h")
-        self.inputs["hours"].setFixedWidth(90)
-        self.inputs["hours"].setStyleSheet(self._get_input_style())
+        self.inputs["hours"].setFixedWidth(80)
         self.inputs["hours"].valueChanged.connect(self.dataChanged)
-        self.inputs["hours"].valueChanged.connect(self._on_hours_changed)
         hours_container.addWidget(self.inputs["hours"])
         row.addLayout(hours_container)
         
         # Target Time
-        target_container = self._create_field_container("⏱️ Target")
-        self.inputs["target_time"] = QDoubleSpinBox()
-        self.inputs["target_time"].setRange(0, 1000)
-        self.inputs["target_time"].setSingleStep(1.0)
-        self.inputs["target_time"].setDecimals(1)
+        target_container = self._create_labeled_field("⏱️ Target")
+        self.inputs["target_time"] = self._make_spin(0, 200, 0.5)
         self.inputs["target_time"].setSuffix(" h")
-        self.inputs["target_time"].setFixedWidth(90)
-        self.inputs["target_time"].setStyleSheet(self._get_input_style())
+        self.inputs["target_time"].setFixedWidth(80)
         self.inputs["target_time"].valueChanged.connect(self.dataChanged)
         target_container.addWidget(self.inputs["target_time"])
         row.addLayout(target_container)
         
         # Difficulty
-        diff_container = self._create_field_container("🎖️ Difficulty")
-        self.inputs["difficulty"] = QComboBox()
-        self.inputs["difficulty"].addItems(["", "Beginner", "Intermediate", "Advanced", "Expert"])
-        self.inputs["difficulty"].setFixedWidth(130)
-        self.inputs["difficulty"].setStyleSheet(self._get_combo_style())
+        diff_container = self._create_labeled_field("🎖️ Difficulty")
+        self.inputs["difficulty"] = self._make_combo(["", "Beginner", "Intermediate", "Advanced", "Expert"])
+        self.inputs["difficulty"].setFixedWidth(110)
         self.inputs["difficulty"].currentTextChanged.connect(self.dataChanged)
         diff_container.addWidget(self.inputs["difficulty"])
         row.addLayout(diff_container)
         
         # Topic Area
-        topic_container = self._create_field_container("🎯 Topic")
-        self.inputs["topic"] = QComboBox()
-        self.inputs["topic"].setEditable(True)
-        self.inputs["topic"].setStyleSheet(self._get_combo_style())
+        topic_container = self._create_labeled_field("🎯 Topic")
+        self.inputs["topic"] = self._make_combo([], editable=True)
         self.inputs["topic"].lineEdit().setPlaceholderText("Enter topic...")
-        self.inputs["topic"].setFixedWidth(140)
+        self.inputs["topic"].setFixedWidth(120)
         self.inputs["topic"].lineEdit().textChanged.connect(self.dataChanged)
         topic_container.addWidget(self.inputs["topic"])
         row.addLayout(topic_container)
         
-        # Tags (expandable)
-        tags_container = self._create_field_container("🏷️ Tags")
-        self.inputs["tags"] = QComboBox()
-        self.inputs["tags"].setEditable(True)
-        self.inputs["tags"].setStyleSheet(self._get_combo_style())
-        self.inputs["tags"].lineEdit().setPlaceholderText("learning, practice, review...")
-        self.inputs["tags"].lineEdit().textChanged.connect(self.dataChanged)
+        # Tags
+        tags_container = self._create_labeled_field("🏷️ Tags")
+        self.inputs["tags"] = QLineEdit()
+        self.inputs["tags"].setPlaceholderText("learning, practice...")
+        self.inputs["tags"].setFixedWidth(140)
+        self._apply_input_style(self.inputs["tags"])
+        self.inputs["tags"].textChanged.connect(self.dataChanged)
         tags_container.addWidget(self.inputs["tags"])
-        row.addLayout(tags_container, 1)  # Give some extra space
+        row.addLayout(tags_container)
         
-        # Progress (read-only)
-        progress_container = self._create_field_container("📈 Progress")
-        self.inputs["progress"] = QLineEdit()
-        self.inputs["progress"].setReadOnly(True)
-        self.inputs["progress"].setFixedWidth(80)
-        self.inputs["progress"].setStyleSheet("""
-            QLineEdit {
-                background-color: #1e293b;
-                color: #60a5fa;
-                border: 2px solid #374151;
-                border-radius: 6px;
-                padding: 6px 8px;
-                font-weight: bold;
-            }
-        """)
-        progress_container.addWidget(self.inputs["progress"])
-        row.addLayout(progress_container)
-        
-        # Notes button
-        notes_container = self._create_field_container("📋 Notes")
-        self.notes_btn = QPushButton("Edit Notes")
-        self.notes_btn.setFixedWidth(100)
-        self.notes_btn.clicked.connect(self._edit_notes)
-        notes_container.addWidget(self.notes_btn)
-        row.addLayout(notes_container)
+        # Notes (compact, no scrollbars)
+        notes_container = self._create_labeled_field("📋 Notes")
+        self.inputs["notes"] = QPlainTextEdit()
+        self.inputs["notes"].setFixedHeight(36)  # ~2 lines, no scroll
+        self.inputs["notes"].setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.inputs["notes"].setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.inputs["notes"].setPlaceholderText("Quick notes...")
+        self._apply_input_style(self.inputs["notes"])
+        self.inputs["notes"].textChanged.connect(self.dataChanged)
+        notes_container.addWidget(self.inputs["notes"])
+        row.addLayout(notes_container, 2)  # Give more space
         
         return row
-        
-    def _get_combo_style(self) -> str:
-        """Get consistent combo box styling with modern look."""
-        return """
-            QComboBox {
-                background-color: #334155;
-                border: 2px solid #475569;
-                border-radius: 8px;
-                padding: 8px 12px;
-                color: #e2e8f0;
-                font-weight: 500;
-                font-size: 13px;
-                min-height: 36px;
-                selection-background-color: #60a5fa;
-            }
-            QComboBox:focus {
-                border-color: #60a5fa;
-                background-color: #475569;
-            }
-            QComboBox::drop-down {
-                subcontrol-origin: padding;
-                subcontrol-position: top right;
-                width: 20px;
-                border-left: 1px solid #475569;
-                background-color: #475569;
-                border-radius: 0px 4px 4px 0px;
-            }
-            QComboBox::down-arrow {
-                width: 12px;
-                height: 12px;
-                color: #e2e8f0;
-            }
-            QComboBox QAbstractItemView {
-                background-color: #334155;
-                border: 2px solid #60a5fa;
-                border-radius: 6px;
-                selection-background-color: #60a5fa;
-                selection-color: white;
-                outline: none;
-            }
-            QComboBox QAbstractItemView::item {
-                padding: 6px 8px;
-                border: none;
-                color: #e2e8f0;
-            }
-            QComboBox QAbstractItemView::item:hover {
-                background-color: #475569;
-            }
-            QComboBox QAbstractItemView::item:selected {
-                background-color: #60a5fa;
-                color: white;
-            }
-        """
-        
-    def _get_input_style(self) -> str:
-        """Get consistent input field styling with modern look."""
-        return """
-            QLineEdit, QDoubleSpinBox, QDateEdit {
-                background-color: #334155;
-                border: 2px solid #475569;
-                border-radius: 8px;
-                padding: 8px 12px;
-                color: #e2e8f0;
-                font-weight: 500;
-                font-size: 13px;
-                min-height: 36px;
-                selection-background-color: #60a5fa;
-            }
-            QLineEdit:focus, QDoubleSpinBox:focus, QDateEdit:focus {
-                border-color: #60a5fa;
-                background-color: #475569;
-            }
-        """
     
-    def _create_field_container(self, label_text: str) -> QVBoxLayout:
-        """Create a labeled field container with improved spacing."""
+    def _create_labeled_field(self, label_text: str) -> QVBoxLayout:
+        """Create a compact labeled field container."""
         container = QVBoxLayout()
-        container.setSpacing(6)  # More space between label and field
+        container.setSpacing(2)
         container.setContentsMargins(0, 0, 0, 0)
         
+        # High contrast label
         label = QLabel(label_text)
         label.setStyleSheet("""
             QLabel {
                 font-weight: 600;
-                color: #e2e8f0;
-                font-size: 13px;
-                margin-bottom: 4px;
-                letter-spacing: 0.5px;
+                color: #f1f5f9;
+                font-size: 11px;
+                margin-bottom: 1px;
             }
         """)
         container.addWidget(label)
         
         return container
     
-    def _edit_notes(self):
-        """Open notes editing dialog."""
-        dialog = NotesDialog(self.notes_text, self)
-        if dialog.exec() == QDialog.Accepted:
-            self.notes_text = dialog.get_text()
-            # Update button text to show if notes exist
-            if self.notes_text.strip():
-                self.notes_btn.setText(f"Notes ({len(self.notes_text.strip())})")
-                self.notes_btn.setStyleSheet("QPushButton { background-color: #059669; }")
-            else:
-                self.notes_btn.setText("Edit Notes")
-                self.notes_btn.setStyleSheet("")
-            self.dataChanged.emit()
+    def _make_combo(self, items: List[str], editable: bool = False) -> QComboBox:
+        """Create a properly configured QComboBox with no internal scrollbars."""
+        cb = QComboBox()
+        cb.addItems(items)
+        cb.setEditable(editable)
+        cb.setInsertPolicy(QComboBox.NoInsert)
+        cb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        
+        # Apply styling and ensure no scrollbars
+        self._apply_combo_style(cb)
+        
+        # Disable scrollbars in dropdown if possible
+        if cb.view():
+            cb.view().setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)  # Minimal scrolling
+        
+        return cb
     
-    def _on_language_changed(self):
-        """Handle language selection - filter topics and suggestions."""
-        language = self.inputs["language"].currentText()
-        # Placeholder for smart filtering logic
-        pass
+    def _make_spin(self, minv: float, maxv: float, step: float) -> QDoubleSpinBox:
+        """Create a properly configured QDoubleSpinBox with no scrollbars."""
+        sp = QDoubleSpinBox()
+        sp.setRange(minv, maxv)
+        sp.setSingleStep(step)
+        sp.setDecimals(2)
+        sp.setButtonSymbols(QDoubleSpinBox.PlusMinus)
+        sp.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        
+        self._apply_input_style(sp)
+        return sp
+    
+    def _apply_combo_style(self, combo: QComboBox):
+        """Apply consistent styling to combo boxes."""
+        combo.setStyleSheet("""
+            QComboBox {
+                background-color: #334155;
+                border: 2px solid #475569;
+                border-radius: 6px;
+                padding: 4px 8px;
+                color: #e2e8f0;
+                font-weight: 500;
+                min-height: 20px;
+            }
+            QComboBox:focus {
+                border-color: #60a5fa;
+                background-color: #475569;
+            }
+            QComboBox::drop-down {
+                border: none;
+                width: 20px;
+                background-color: #475569;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #334155;
+                border: 2px solid #60a5fa;
+                selection-background-color: #60a5fa;
+                selection-color: white;
+                outline: none;
+            }
+        """)
+    
+    def _apply_input_style(self, widget):
+        """Apply consistent styling to input widgets."""
+        widget.setStyleSheet("""
+            QLineEdit, QDoubleSpinBox, QDateEdit, QPlainTextEdit {
+                background-color: #334155;
+                border: 2px solid #475569;
+                border-radius: 6px;
+                padding: 4px 8px;
+                color: #e2e8f0;
+                font-weight: 500;
+                min-height: 20px;
+            }
+            QLineEdit:focus, QDoubleSpinBox:focus, QDateEdit:focus, QPlainTextEdit:focus {
+                border-color: #60a5fa;
+                background-color: #475569;
+            }
+        """)
     
     def _on_type_changed(self):
-        """Handle type selection - adjust UI behavior."""
+        """Handle type selection - show/hide target time for exercises."""
         type_value = self.inputs["type"].currentText()
         
         if type_value == "Exercise":
-            # Exercises usually don't have target times
+            # Exercises usually don't need target times
             self.inputs["target_time"].setValue(0.0)
             self.inputs["target_time"].setEnabled(False)
-        elif type_value == "Project":
-            # Projects should have target times
-            self.inputs["target_time"].setEnabled(True)
+            self.inputs["target_time"].setStyleSheet(self.inputs["target_time"].styleSheet() + "color: #6b7280;")
         else:
-            # Default
+            # Projects need target times
             self.inputs["target_time"].setEnabled(True)
-    
-    def _on_work_item_changed(self):
-        """Handle work item changes - auto-fill related fields."""
-        # Placeholder for auto-fill logic based on existing items
-        pass
-    
-    def _on_hours_changed(self):
-        """Handle hours change - update progress calculation."""
-        # Placeholder for progress calculation
-        pass
+            self._apply_input_style(self.inputs["target_time"])
     
     def get_form_data(self) -> Dict[str, Any]:
         """Get current form data."""
@@ -448,10 +337,9 @@ class CompactForm(QWidget):
         if "topic" in self.inputs:
             data["topic"] = self.inputs["topic"].currentText()
         if "tags" in self.inputs:
-            data["tags"] = self.inputs["tags"].currentText()
-        
-        # Add notes
-        data["notes"] = self.notes_text
+            data["tags"] = self.inputs["tags"].text()
+        if "notes" in self.inputs:
+            data["notes"] = self.inputs["notes"].toPlainText()
         
         return data
     
@@ -476,13 +364,11 @@ class CompactForm(QWidget):
         if "topic" in self.inputs:
             self.inputs["topic"].clearEditText()
         if "tags" in self.inputs:
-            self.inputs["tags"].clearEditText()
-        if "progress" in self.inputs:
-            self.inputs["progress"].setText("0.0%")
+            self.inputs["tags"].clear()
+        if "notes" in self.inputs:
+            self.inputs["notes"].clear()
             
-        self.notes_text = ""
-        self.notes_btn.setText("Edit Notes")
-        self.notes_btn.setStyleSheet("")
+        self.status_label.hide()
     
     def set_form_data(self, data: Dict[str, Any]):
         """Populate form with data for editing."""
@@ -521,27 +407,17 @@ class CompactForm(QWidget):
             self.inputs["topic"].setCurrentText(data["topic"] or "")
             
         if "tags" in data and "tags" in self.inputs:
-            self.inputs["tags"].setCurrentText(data["tags"] or "")
+            self.inputs["tags"].setText(data["tags"] or "")
             
-        if "progress_pct" in data and "progress" in self.inputs:
-            progress = float(data["progress_pct"] or 0)
-            self.inputs["progress"].setText(f"{progress:.1f}%")
-        
-        # Handle notes
-        self.notes_text = data.get("notes", "")
-        if self.notes_text.strip():
-            self.notes_btn.setText(f"Notes ({len(self.notes_text.strip())})")
-            self.notes_btn.setStyleSheet("QPushButton { background-color: #059669; }")
-        else:
-            self.notes_btn.setText("Edit Notes")
-            self.notes_btn.setStyleSheet("")
+        if "notes" in data and "notes" in self.inputs:
+            self.inputs["notes"].setPlainText(data["notes"] or "")
     
     def load_languages(self, languages: List[tuple]):
-        """Load available languages."""
+        """Load available languages into combo."""
         combo = self.inputs.get("language")
         if combo:
             combo.clear()
-            combo.addItem("")
+            combo.addItem("")  # Empty option
             for code, name, _color in languages:
                 combo.addItem(name, code)
     
@@ -551,7 +427,7 @@ class CompactForm(QWidget):
         
         required_fields = {
             "date": "Date",
-            "language_code": "Language",
+            "language_code": "Language", 
             "type": "Type",
             "canonical_name": "Work Item Name",
             "hours_spent": "Hours"
@@ -563,12 +439,12 @@ class CompactForm(QWidget):
                 missing.append(display_name)
         
         if missing:
-            return False, f"Please fill in required fields: {', '.join(missing)}"
+            return False, f"Required: {', '.join(missing)}"
             
         return True, ""
     
     def update_status_display(self, message: str):
-        """Update status label."""
+        """Update status label with auto-hide."""
         if message:
             self.status_label.setText(message)
             self.status_label.show()
@@ -576,7 +452,7 @@ class CompactForm(QWidget):
             QTimer.singleShot(3000, self.status_label.hide)
         else:
             self.status_label.hide()
-        
+            
     def focus_first_field(self):
         """Focus the first input field."""
         if "date" in self.inputs:

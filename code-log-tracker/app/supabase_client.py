@@ -12,33 +12,32 @@ from dotenv import load_dotenv
 # Load environment variables (for local development)
 load_dotenv()
 
+def _get_secret(name: str) -> str | None:
+    """Get secret from Streamlit secrets or environment variables."""
+    try:
+        return st.secrets.get(name) or os.getenv(name)
+    except:
+        return os.getenv(name)
+
 class SupabaseManager:
-    """Manages Supabase client and authentication."""
+    """Manages Supabase client and authentication. Uses only anon key for security."""
     
     def __init__(self):
-        # Try to get from Streamlit secrets first (cloud deployment)
-        # Then fall back to environment variables (local development)
-        try:
-            # Streamlit Cloud secrets
-            self.url = st.secrets.get("SUPABASE_URL", os.getenv("SUPABASE_URL"))
-            self.anon_key = st.secrets.get("SUPABASE_ANON_KEY", os.getenv("SUPABASE_ANON_KEY"))
-            self.service_key = st.secrets.get("SUPABASE_SERVICE_KEY", os.getenv("SUPABASE_SERVICE_KEY"))
-        except:
-            # Fall back to environment variables only
-            self.url = os.getenv("SUPABASE_URL")
-            self.anon_key = os.getenv("SUPABASE_ANON_KEY")
-            self.service_key = os.getenv("SUPABASE_SERVICE_KEY")
+        # Get required configuration
+        self.url = _get_secret("SUPABASE_URL")
+        self.anon_key = _get_secret("SUPABASE_ANON_KEY")
         
-        if not self.url or not self.anon_key:
-            # Provide more helpful error message
-            missing = []
-            if not self.url:
-                missing.append("SUPABASE_URL")
-            if not self.anon_key:
-                missing.append("SUPABASE_ANON_KEY")
-            raise ValueError(f"Missing Supabase configuration: {', '.join(missing)}. "
-                           f"Please set these in Streamlit Cloud Secrets or environment variables.")
+        # Check for missing configuration
+        missing = []
+        if not self.url:
+            missing.append("SUPABASE_URL")
+        if not self.anon_key:
+            missing.append("SUPABASE_ANON_KEY")
             
+        if missing:
+            raise ValueError(f"Missing Supabase configuration: {', '.join(missing)}.")
+            
+        # Create client with anon key only (respects RLS)
         self.client: Client = create_client(self.url, self.anon_key)
     
     # Authentication Methods
@@ -409,11 +408,16 @@ class SupabaseManager:
         pass
 
 
-# Global instance
-@st.cache_resource
+# Global instance with proper error handling
+@st.cache_resource(show_spinner=False)
 def get_supabase_manager() -> SupabaseManager:
     """Get cached Supabase manager instance."""
-    return SupabaseManager()
+    try:
+        return SupabaseManager()
+    except ValueError as e:
+        st.error("Supabase configuration is incomplete.")
+        st.error(str(e))
+        st.stop()
 
 # Alias for compatibility
 SupabaseClient = SupabaseManager

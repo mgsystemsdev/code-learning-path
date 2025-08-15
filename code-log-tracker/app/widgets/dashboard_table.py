@@ -162,24 +162,36 @@ class DashboardTable(QWidget):
         self.table.itemChanged.connect(self._on_cell_changed)
     
     def _setup_columns(self):
-        """Configure column widths proportionally."""
+        """Configure column widths proportionally - no horizontal scroll."""
         header = self.table.horizontalHeader()
         
-        # Set minimum section sizes
+        # Use proportional widths for all 14 columns without horizontal scroll
+        proportional_widths = {
+            # Small (1×): ID, Date, Type, Status, Hours, Language, Progress %, Target
+            "ID": 60, "Date": 100, "Type": 80, "Status": 100, "Hours": 80,
+            "Language": 100, "Progress %": 90, "Target Hours": 100,
+            # Wide (2×): Work Item Name, Notes  
+            "Work Item": 200, "Notes": 200,
+            # Medium (1.25×): Tags, Topic, Difficulty, Points
+            "Tags": 120, "Topic": 120, "Difficulty": 120, "Points": 80
+        }
+        
+        # Set all columns to stretch proportionally - NO horizontal scroll
+        header.setSectionResizeMode(QHeaderView.Stretch)
         header.setMinimumSectionSize(60)
         
-        # Calculate flexible columns
-        flexible_columns = []
+        # Apply minimum widths to maintain readability
         for i, header_name in enumerate(TableConfig.HEADERS):
-            width = TableConfig.COLUMN_WIDTHS.get(header_name, 100)
-            if width < 0:  # Flexible width
-                flexible_columns.append(i)
-                header.setSectionResizeMode(i, QHeaderView.Stretch)
-            else:
-                header.resizeSection(i, width)
-                header.setSectionResizeMode(i, QHeaderView.Fixed)
+            min_width = proportional_widths.get(header_name, 80)
+            header.resizeSection(i, min_width)
         
-        # Freeze the header
+        # Right-align numeric columns
+        numeric_columns = ["Hours", "Target Hours", "Points", "Progress %"]
+        for col_name in numeric_columns:
+            if col_name in TableConfig.HEADERS:
+                col_idx = TableConfig.HEADERS.index(col_name)
+                # This will be applied when data is loaded
+        
         header.setStretchLastSection(False)
         
     def _install_delegates(self):
