@@ -464,7 +464,7 @@ def insert_or_update_session(session_data: Dict) -> int:
     con.commit()
 
     # Recompute and store project progress if a project name is provided
-    project_name = row.get("project_name")
+    project_name = session_data.get("project_name")
     if project_name:
         cur.execute("SELECT target_hours FROM projects WHERE name=?", (project_name,))
         tgt_row = cur.fetchone()
@@ -547,7 +547,7 @@ def list_sessions(limit: int = 200) -> List[Tuple]:
     cur.execute("""
         SELECT s.id, s.date, i.language_code, i.type, i.canonical_name, 
                s.status, s.hours_spent, s.notes, s.tags, s.difficulty, 
-               s.topic, s.points_awarded, s.progress_pct, s.item_id
+               s.topic, s.points_awarded, s.progress_pct, s.item_id, i.target_hours
         FROM sessions s
         JOIN items i ON s.item_id = i.id
         ORDER BY s.date DESC, s.id DESC 

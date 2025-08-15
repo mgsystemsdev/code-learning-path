@@ -26,17 +26,24 @@ QGuiApplication.setHighDpiScaleFactorRoundingPolicy(
 )
 
 # Import after Qt pieces are configured
-from app.main_window import MainWindow  # noqa: E402
+from app.dashboard_window import DashboardWindow  # noqa: E402
+from app.db import init_db  # noqa: E402
 
 
 def main() -> int:
-    """Create the Qt application, show MainWindow, and start the event loop."""
+    """Create the Qt application, show DashboardWindow, and start the event loop."""
     app = QApplication(sys.argv)
     app.setApplicationName("Smart Learning Tracker")
     app.setApplicationVersion("2.0")
 
     try:
-        window = MainWindow()
+        # Initialize database
+        print("Initializing database...")
+        init_db()
+        
+        # Create and show dashboard window
+        print("Starting dashboard...")
+        window = DashboardWindow()
         window.show()
         return app.exec()
     except Exception as e:
