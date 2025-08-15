@@ -1,6 +1,10 @@
 PySide6==6.7.2
 pandas==2.2.2
-supabase
-supabase-postgrest
-python-dotenv
-streamlit
+streamlit==1.36.0
+supabase==2.0.0
+python-dotenv==1.0.0
+psycopg2-binary==2.9.0
+streamlit-authenticator==0.2.3
+plotly==5.17.0
+st-aggrid==0.3.4
+streamlit-option-menu==0.3.6
