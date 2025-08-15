@@ -343,11 +343,24 @@ def show_sessions_table():
     # Handle updates
     if grid_response['data'] is not None:
         updated_df = pd.DataFrame(grid_response['data'])
-        
-        # Check for changes and update
-        if not updated_df.equals(display_df):
-            st.info("Changes detected. Updating database...")
-            # Here you would implement the update logic
+        # Find changed rows by comparing to original
+        changed_rows = []
+        for idx, row in updated_df.iterrows():
+            orig_row = display_df.iloc[idx]
+            # Only compare editable columns
+            editable_cols = [col for col in available_columns if col != 'id']
+            changes = {col: row[col] for col in editable_cols if row[col] != orig_row[col]}
+            if changes:
+                changed_rows.append((row['id'], changes))
+        if changed_rows:
+            st.info(f"{len(changed_rows)} change(s) detected. Updating database...")
+            supabase = get_supabase_manager()
+            for session_id, updates in changed_rows:
+                result = supabase.update_session(session_id, updates)
+                if result.get('success'):
+                    st.success(f"Session {session_id} updated.")
+                else:
+                    st.error(f"Error updating session {session_id}: {result.get('error')}")
 
 def show_analytics():
     """Show analytics and insights."""
