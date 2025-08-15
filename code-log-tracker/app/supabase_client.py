@@ -9,19 +9,35 @@ from typing import Dict, Any, Optional, List, Tuple
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
-# Load environment variables
+# Load environment variables (for local development)
 load_dotenv()
 
 class SupabaseManager:
     """Manages Supabase client and authentication."""
     
     def __init__(self):
-        self.url = os.getenv("SUPABASE_URL")
-        self.anon_key = os.getenv("SUPABASE_ANON_KEY")
-        self.service_key = os.getenv("SUPABASE_SERVICE_KEY")
+        # Try to get from Streamlit secrets first (cloud deployment)
+        # Then fall back to environment variables (local development)
+        try:
+            # Streamlit Cloud secrets
+            self.url = st.secrets.get("SUPABASE_URL", os.getenv("SUPABASE_URL"))
+            self.anon_key = st.secrets.get("SUPABASE_ANON_KEY", os.getenv("SUPABASE_ANON_KEY"))
+            self.service_key = st.secrets.get("SUPABASE_SERVICE_KEY", os.getenv("SUPABASE_SERVICE_KEY"))
+        except:
+            # Fall back to environment variables only
+            self.url = os.getenv("SUPABASE_URL")
+            self.anon_key = os.getenv("SUPABASE_ANON_KEY")
+            self.service_key = os.getenv("SUPABASE_SERVICE_KEY")
         
         if not self.url or not self.anon_key:
-            raise ValueError("Missing Supabase URL or ANON_KEY in environment variables")
+            # Provide more helpful error message
+            missing = []
+            if not self.url:
+                missing.append("SUPABASE_URL")
+            if not self.anon_key:
+                missing.append("SUPABASE_ANON_KEY")
+            raise ValueError(f"Missing Supabase configuration: {', '.join(missing)}. "
+                           f"Please set these in Streamlit Cloud Secrets or environment variables.")
             
         self.client: Client = create_client(self.url, self.anon_key)
     
