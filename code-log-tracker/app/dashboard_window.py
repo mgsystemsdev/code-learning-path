@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, 
     QLabel, QPushButton, QMessageBox, QFileDialog,
     QSplitter, QFrame, QStatusBar, QMenuBar, QMenu,
-    QCheckBox, QDialog, QDialogButtonBox
+    QCheckBox, QDialog, QDialogButtonBox, QComboBox
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QAction
@@ -37,7 +37,15 @@ class DashboardWindow(QMainWindow):
         
         # Launch just under fullscreen
         self.resize(1400, 820)
-        self.setMinimumSize(1200, 700)
+        self.setMinimumSize(1800, 700)
+        
+        # Center window on screen
+        screen = self.screen().availableGeometry()
+        window_size = self.frameGeometry()
+        x = (screen.width() - window_size.width()) // 2
+        y = (screen.height() - window_size.height()) // 2
+        self.move(x, y)
+        
         self.show()
         
         # Services
