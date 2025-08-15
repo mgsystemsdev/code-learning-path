@@ -365,7 +365,7 @@ def show_sessions_table():
                         'notes': new_notes
                     }
                     
-                    result = supabase_manager.update_session(selected_id, updates)
+                    result = supabase.update_session(selected_id, updates)
                     if result['success']:
                         st.success("Session updated successfully!")
                         st.rerun()
