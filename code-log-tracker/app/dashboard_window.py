@@ -204,8 +204,19 @@ class DashboardWindow(QMainWindow):
             languages = self.language_service.get_languages()
             self.form.load_languages(languages)
             
-            # Also update table filter if needed
-            # TODO: Update table filter dropdown with languages
+            # Update table filter dropdown with languages
+            if hasattr(self.table, 'filter_row') and self.table.filter_row:
+                language_filter = self.table.filter_row.filters.get('Language')
+                if isinstance(language_filter, QComboBox):
+                    current_text = language_filter.currentText()
+                    language_filter.clear()
+                    language_filter.addItem("")  # Empty = no filter
+                    for code, name, _color in languages:
+                        language_filter.addItem(name)
+                    # Restore selection if it still exists
+                    index = language_filter.findText(current_text)
+                    if index >= 0:
+                        language_filter.setCurrentIndex(index)
             
         except Exception as e:
             self._show_error("Loading Languages", f"Failed to load languages: {e}")
@@ -230,8 +241,40 @@ class DashboardWindow(QMainWindow):
     
     def _on_cell_changed(self, row: int, col: int):
         """Handle inline table edits."""
-        # TODO: Implement inline edit handling
-        pass
+        try:
+            # Get the edited row data
+            row_data = self.table.get_selected_row_data()
+            if not row_data:
+                return
+            
+            # Validate that we have a valid session ID
+            session_id = row_data.get("id")
+            if not session_id:
+                return
+                
+            # Convert row data to session format
+            session_data = {
+                "id": int(session_id),
+                "date": row_data.get("date", ""),
+                "status": row_data.get("status", "In Progress"),
+                "hours_spent": float(row_data.get("hours_spent", 0)) if row_data.get("hours_spent") else 0.0,
+                "notes": row_data.get("notes", ""),
+                "tags": row_data.get("tags", ""),
+                "difficulty": row_data.get("difficulty", "Beginner"),
+                "topic": row_data.get("topic", ""),
+                "item_id": row_data.get("item_id", 0)  # Will be resolved by service
+            }
+            
+            # Save the updated session
+            self.session_service.save_session(session_data, editing_session_id=int(session_id))
+            
+            # Reload the table to show updated computed values
+            self.reload_table()
+            
+        except Exception as e:
+            self._show_error("Edit Error", f"Failed to save inline edit: {e}")
+            # Reload table to revert changes
+            self.reload_table()
     
     def _on_form_data_changed(self):
         """Handle form data changes."""
@@ -382,5 +425,21 @@ class DashboardWindow(QMainWindow):
     
     def closeEvent(self, event):
         """Handle window close event."""
-        # TODO: Save any unsaved changes prompt
+        # Check if there are unsaved changes in the form
+        if self.save_btn.isEnabled():
+            reply = QMessageBox.question(
+                self, "Unsaved Changes",
+                "You have unsaved changes in the form. Do you want to save them before closing?",
+                QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
+            )
+            
+            if reply == QMessageBox.Save:
+                self.save_entry()
+                event.accept()
+            elif reply == QMessageBox.Discard:
+                event.accept()
+            else:  # Cancel
+                event.ignore()
+                return
+        
         event.accept()
