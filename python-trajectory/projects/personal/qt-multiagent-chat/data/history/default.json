@@ -1,0 +1,22 @@
+{
+  "conversation_id": "default",
+  "created_at": "2025-08-13T22:43:11.752746",
+  "current_role": "Engineer",
+  "messages": [
+    {
+      "message": "UI upgraded: dark theme, card messages, role tree, preview polish.",
+      "role": "agent",
+      "timestamp": "2025-08-13T22:42:27.782673"
+    },
+    {
+      "message": "hello",
+      "role": "user",
+      "timestamp": "2025-08-13T22:42:51.915362"
+    },
+    {
+      "message": "Hello! How can I assist you with your engineering or technical questions today? Whether it's about software, hardware, design, or any other technical topic, feel free to ask.",
+      "role": "agent",
+      "timestamp": "2025-08-13T22:43:11.751295"
+    }
+  ]
+}

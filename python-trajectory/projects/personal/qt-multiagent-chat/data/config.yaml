@@ -1,0 +1,3 @@
+models:
+  default: qwen
+  boost: gpt-4.1-mini

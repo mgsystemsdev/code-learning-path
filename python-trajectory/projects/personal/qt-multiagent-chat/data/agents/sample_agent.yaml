@@ -1,0 +1,5 @@
+name: Engineer
+prompt_core: |
+  You are the Engineer Bot...
+
+prompt_supplemental: []
