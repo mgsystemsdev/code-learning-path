@@ -134,7 +134,7 @@ def init_db():
         ('html', 'HTML/CSS', '#e34f26'),
         ('sql', 'SQL', '#336791'),
         ('git', 'Git/DevOps', '#f05032'),
-        ('general', 'General/Theory', '#6c757d')
+        ('general', 'General Theory', '#6c757d')
     ]
     
     for code, name, color in languages:
@@ -160,7 +160,9 @@ def get_config(key: str = 'global') -> Dict:
 
 def load_language_pack(language_code: str) -> Dict:
     """Load language pack from JSON file"""
-    pack_file = RULES_PATH / f"{language_code}.json"
+    # Clean language code to prevent path issues
+    clean_code = language_code.replace('/', '_').replace(' ', '_').lower()
+    pack_file = RULES_PATH / f"{clean_code}.json"
     common_file = RULES_PATH / "_common.json"
     
     # Ensure rules directory exists

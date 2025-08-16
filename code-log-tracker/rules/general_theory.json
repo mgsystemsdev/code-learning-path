@@ -1,0 +1,18 @@
+{
+  "topics": {
+    "Basics": {
+      "default_difficulty": "Beginner",
+      "default_target_hours": 5
+    },
+    "Theory": {
+      "default_difficulty": "Intermediate", 
+      "default_target_hours": 10
+    },
+    "Concepts": {
+      "default_difficulty": "Advanced",
+      "default_target_hours": 15
+    }
+  },
+  "skills": {},
+  "aliases": {}
+}

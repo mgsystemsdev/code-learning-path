@@ -25,8 +25,8 @@ QGuiApplication.setHighDpiScaleFactorRoundingPolicy(
     Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
 )
 
-# Import after Qt pieces are configured
-from app.dashboard_window import DashboardWindow  # noqa: E402
+# Import the clean UI instead of old dashboard
+from clean_ui_pyside6 import DashboardWindow  # noqa: E402
 from app.db import init_db  # noqa: E402
 
 
