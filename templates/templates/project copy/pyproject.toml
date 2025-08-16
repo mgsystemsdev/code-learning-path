@@ -1,5 +1,5 @@
 [project]
-name = "cap_01_<title>"
+name = "project-template"
 version = "0.1.0"
 description = "Starter template project."
 authors = [{ name = "Miguel A. Gonzalez", email = "mg.systems.dev@gmail.com" }]
