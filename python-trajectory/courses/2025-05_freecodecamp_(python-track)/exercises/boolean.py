@@ -63,3 +63,194 @@ for char in text.lower():
     new_index = index + shift
     encrypted_text += alphabet[new_index]
     print('char:', char, 'encrypted text:', encrypted_text)
+
+
+# Step 43
+# A conditional statement can also have an else clause. This clause can be added to the end of an if statement to execute alternative code if the condition of the if statement is false:
+
+# Example Code
+# if x != 0:
+#     print(x)
+# else:
+#     print('x = 0')
+# As you can see in your output, when the loop iterations reach the space, a space is added to the encrypted string. Then the code outside the if block executes and a c is added to the encrypted string.
+
+# To fix it, add an else clause after encrypted_text += char and indent all the subsequent lines of code except the print() call.
+
+text = 'Hello World'
+shift = 3
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+encrypted_text = ''
+
+for char in text.lower():
+    if char == ' ':
+        encrypted_text += char
+    else:
+        index = alphabet.find(char)
+        new_index = index + shift
+        encrypted_text += alphabet[new_index]
+    print('char:', char, 'encrypted text:', encrypted_text)
+
+# Step 44
+# Try to assign the string 'Hello Zaira' to your text variable and see what happens in the terminal.
+
+# You'll see a string index out of range exception. Don't worry, you'll figure out how to fix it soon!
+
+text = 'Hello Zaira'
+shift = 3
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+encrypted_text = ''
+
+for char in text.lower():
+    if char == ' ':
+        encrypted_text += char
+    else:
+        index = alphabet.find(char)
+        new_index = index + shift
+        encrypted_text += alphabet[new_index]
+    print('char:', char, 'encrypted text:', encrypted_text)
+
+
+# Step 45
+# When the loop reaches the letter Z, the sum index + shift exceeds the last index of the string alphabet. Therefore, alphabet[new_index] is trying to use an invalid index, which causes an IndexError to be thrown.
+
+# You can notice that the output in the terminal stops at the space immediately before the Z, the last print before the error is thrown.
+
+# In this case, the modulo operator (%) can be used to return the remainder of the division between two numbers. For example: 5 % 2 is equal to 1, because 5 divided by 2 has a quotient of 2 and a remainder of 1.
+
+# Surround index + shift with parentheses, and modulo the expression with 26, which is the alphabet length.
+
+
+
+# Step 46
+# If you wish to incorporate additional characters into the alphabet string, such as digits or special characters, you'll find it's necessary to manually modify the right operand of the modulo operation.
+
+# Replace 26 with len(alphabet) to avoid this issue.
+
+text = 'Hello Zaira'
+shift = 3
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+encrypted_text = ''
+
+for char in text.lower():
+    if char == ' ':
+        encrypted_text += char
+    else:
+        index = alphabet.find(char)
+        new_index = (index + shift) % len(alphabet)
+        encrypted_text += alphabet[new_index]
+    print('char:', char, 'encrypted text:', encrypted_text)
+
+
+
+
+# Step 47
+# Next, modify your print() call to print 'encrypted text:', encrypted_text and put it outside the for loop, so that the encrypted string is printed one time.
+text = 'Hello Zaira'
+shift = 3
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+encrypted_text = ''
+
+for char in text.lower():
+    if char == ' ':
+        encrypted_text += char
+    else:
+        index = alphabet.find(char)
+        new_index = (index + shift) % len(alphabet)
+        encrypted_text += alphabet[new_index]
+print('encrypted text:', encrypted_text)
+
+# Step 48
+# Right before the print call, add another one and pass 'plain text:', text as the arguments to print(). Use the same indentation.
+
+text = 'Hello Zaira'
+shift = 3
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+encrypted_text = ''
+
+for char in text.lower():
+    if char == ' ':
+        encrypted_text += char
+    else:
+        index = alphabet.find(char)
+        new_index = (index + shift) % len(alphabet)
+        encrypted_text += alphabet[new_index]
+print('plain text:',text)
+print('encrypted text:', encrypted_text)
+
+
+
+# Step 49
+# A function is essentially a reusable block of code. You have already met some built-in functions, like print(), find() and len(). But you can also define custom functions like this:
+
+
+text = 'Hello Zaira'
+shift = 3
+def caesar_encrypt():
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    encrypted_text = ''
+ 
+    for char in text.lower():
+        if char == ' ':
+            encrypted_text += char
+        else:
+            index = alphabet.find(char)
+            new_index = (index + shift) % len(alphabet)
+            encrypted_text += alphabet[new_index]
+    print('plain text:', text)
+    print('encrypted text:', encrypted_text)
+
+
+# Step 50
+# In Python, the scope of a variable determines where that variable can be accessed:
+
+# Variables defined outside a function have a global scope and they can be accessed from any part of your code.
+
+# Variables defined inside a function are local to that function and cannot be accessed outside of it.
+
+# To see this in action, try to print the alphabet variable at the end of your code. This will raise a NameError exception.
+
+# You should see an error message indicating that alphabet is not defined. This is because alphabet is defined inside the caesar function and is not accessible outside of it.
+
+text = 'Hello Zaira'
+shift = 3
+
+def caesar_v2():
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    encrypted_text = ''
+
+    for char in text.lower():
+        if char == ' ':
+            encrypted_text += char
+        else:
+            index = alphabet.find(char)
+            new_index = (index + shift) % len(alphabet)
+            encrypted_text += alphabet[new_index]
+    print('plain text:', text)
+    print('encrypted text:', encrypted_text)
+
+print(alphabet)
+
+
+
+# Step 51
+# Now, fix the error by removing the line that tries to print the alphabet variable outside of the caesar function.
+
+text = 'Hello Zaira'
+shift = 3
+
+def caesar():
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    encrypted_text = ''
+
+    for char in text.lower():
+        if char == ' ':
+            encrypted_text += char
+        else:
+            index = alphabet.find(char)
+            new_index = (index + shift) % len(alphabet)
+            encrypted_text += alphabet[new_index]
+    print('plain text:', text)
+    print('encrypted text:', encrypted_text)
+
+
