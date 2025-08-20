@@ -1,0 +1,24 @@
+# NOTE:
+# This demo uses PySide6 (Qt for Python).
+# If you prefer PyQt5/PyQt6, you can switch imports accordingly.
+# Each script is standalone: run with `python this_file.py`.
+
+from PySide6.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+
+class DemoDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("QDialog demo")
+        lay = QVBoxLayout(self)
+        lay.addWidget(QLabel("This is a dialog."))
+        btns = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        btns.accepted.connect(self.accept)
+        btns.rejected.connect(self.reject)
+        lay.addWidget(btns)
+
+if __name__ == "__main__":
+    app = QApplication([])
+    dlg = DemoDialog()
+    dlg.exec()
