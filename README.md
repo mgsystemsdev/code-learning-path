@@ -58,4 +58,4 @@ code-learning-path/
 MIT License © 2025 Miguel A. Gonzalez. See [LICENSE](LICENSE).
 # code-learning-path
 Learning Tracker (Desktop + Web Demo)
-https://code-learning-path-he6mnt3usprtot3tltlab4.streamlit.app/
+

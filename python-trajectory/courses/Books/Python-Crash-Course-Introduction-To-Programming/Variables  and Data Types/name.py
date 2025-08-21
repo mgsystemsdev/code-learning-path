@@ -1,12 +1,9 @@
 
 
-
-
+# strings
 
 name = "ada lovelace"
 print(name.title())
-
-
 
 #-------------------------
 
@@ -15,11 +12,11 @@ print(name.lower())
 print(name.upper())
 
 #-------------------------
+
 firts_name = "ada"
 last_name = "lovelace"
 full_name = f"{firts_name} {last_name}"
 print(full_name)
-
 
 
 #-------------------------
