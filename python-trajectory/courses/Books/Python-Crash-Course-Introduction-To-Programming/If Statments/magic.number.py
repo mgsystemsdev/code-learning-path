@@ -30,3 +30,32 @@ if age < 21:
     print("You are not old enough to enter.")
 else:
     print("You are old enough to enter.")
+
+
+#----------------------
+
+# numerical comparisons
+
+age = 18
+print(age == 18)
+
+
+age = 19
+print(age < 21)
+
+print(age <= 21)
+
+print(age > 21)
+
+print(age >= 21)
+
+#--------------------
+
+#checking weather a value is in a list
+
+request_topping = ['mushroom', 'onions', 'pineapple']
+
+print('mushroom' in request_topping)
+print('peperoni' in request_topping)
+
+
