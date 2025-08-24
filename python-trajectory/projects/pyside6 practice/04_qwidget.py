@@ -3,6 +3,7 @@
 # If you prefer PyQt5/PyQt6, you can switch imports accordingly.
 # Each script is standalone: run with `python this_file.py`.
 
+import sys
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *

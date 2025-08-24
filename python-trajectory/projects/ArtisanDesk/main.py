@@ -19,7 +19,7 @@ class MainAppWindow(QMainWindow):
         self.setCentralWidget(self.stack)
 
     def open_new_window(self):
-        dlg = NewWindow(self)
+        dlg = NewWindow()
         dlg.show()
 
 

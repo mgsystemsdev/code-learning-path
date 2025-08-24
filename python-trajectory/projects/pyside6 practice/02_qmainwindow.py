@@ -3,9 +3,12 @@
 # If you prefer PyQt5/PyQt6, you can switch imports accordingly.
 # Each script is standalone: run with `python this_file.py`.
 
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QMenuBar, QToolBar, QStatusBar,
+    QWidget, QVBoxLayout, QLabel, QPushButton, QDockWidget
+)
+from PySide6.QtCore import Qt
+import sys
 
 class DemoMainWindow(QMainWindow):
     def __init__(self):
@@ -28,12 +31,12 @@ class DemoMainWindow(QMainWindow):
         lay = QVBoxLayout(central)
         lay.addWidget(QLabel("Central area"))
         lay.addWidget(QPushButton("Click me"))
-        self.setCentralWidget(central)
-
         # Dock
-        dock = QDockWidget("Dock", self)
+        dock = QDockWidget("Dockable panel", self)
         dock.setWidget(QLabel("Dockable panel"))
-        self.addDockWidget(Qt.LeftDockWidgetArea, dock)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock)
+        # self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock)  # Removed invalid line
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, dock)
 
 if __name__ == "__main__":
     app = QApplication([])

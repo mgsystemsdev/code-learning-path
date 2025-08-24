@@ -13,7 +13,7 @@ class DemoDialog(QDialog):
         self.setWindowTitle("QDialog demo")
         lay = QVBoxLayout(self)
         lay.addWidget(QLabel("This is a dialog."))
-        btns = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        btns = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         btns.accepted.connect(self.accept)
         btns.rejected.connect(self.reject)
         lay.addWidget(btns)
