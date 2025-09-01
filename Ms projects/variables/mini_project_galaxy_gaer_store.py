@@ -22,20 +22,19 @@ print(f"    Welcome To {STORE_NAME.strip()}!    ")              # OUTPUT
 print(LINES)                                                    # OUTPUT
 print("")                                                       # OUTPUT
 print(STRIP_COS.title())                                        # OUTPUT
-print("")
-print("Purchase:")
-print("")
-print(f"{STRIP_I1.title()} - ${PRICE_1}")
-print(f"{STRIP_I2.title()}  - ${PRICE_2}")
-print(LINES_2)
-print(f"Subtotal: ${TOTAL}")
-print(f"Sales Tax: {STORE_TAX}%")
-print(LINES_2)
-print(f"Total: ${FINAL_TOTAL:.2f}")
-print("")
-print("")
-print(LINES)
-print(FINAL_GREET)
-print(LINES)
-print("")
+print("")                                                       # OUTPUT
+print("Purchase:")                                              # OUTPUT
+print("")                                                       # OUTPUT
+print(f"{STRIP_I1.title()} - ${PRICE_1}")                     # OUTPUT
+print(f"{STRIP_I2.title()}  - ${PRICE_2}")                     # OUTPUT
+print(LINES_2)                                                 # OUTPUT
+print(f"Subtotal: ${TOTAL}")                                   # OUTPUT
+print(f"Sales Tax: {STORE_TAX}%")                               # OUTPUT
+print(LINES_2)                                                 # OUTPUT
+print(f"Total: ${FINAL_TOTAL:.2f}")                             # OUTPUT
+print("")                                                       # OUTPUT
+print(LINES)                                                    # OUTPUT
+print(FINAL_GREET)                                              # OUTPUT
+print(LINES)                                                    # OUTPUT
+print("")                                                       # OUTPUT
 
