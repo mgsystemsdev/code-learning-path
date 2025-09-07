@@ -1,2 +1,0 @@
-# Resources
-- Link — summary

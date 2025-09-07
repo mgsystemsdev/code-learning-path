@@ -1,3 +1,0 @@
-# Syllabus
-- Module 1
-- Module 2
