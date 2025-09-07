@@ -1,47 +1,25 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+*.pyc
+*.pyo
+*.pyd
 *.egg-info/
-.installed.cfg
-*.egg
+.eggs/
+*.log
 
 # Virtual environments
-.venv/
 venv/
-ENV/
-env/
-.python-version
+.env/
+.env*/
 
-# Testing
-.pytest_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-pytestdebug.log
-
-# IDE
-.idea/
-.vscode/
-
-# OS
+# OS junk
 .DS_Store
-Thumbs.db
+
+# Large installers / archives
+*.dmg
+*.pkg
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.sh
