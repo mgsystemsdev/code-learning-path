@@ -23,3 +23,10 @@ venv/
 *.tar.gz
 *.tgz
 *.sh
+
+# Conda installers specifically
+Miniconda3-latest-*.sh
+Anaconda3-*.sh
+
+# Git LFS (if used)
+*.lfsconfig
